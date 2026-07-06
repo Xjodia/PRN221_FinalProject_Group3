@@ -1,0 +1,139 @@
+@model HomeViewModel
+
+@{
+    ViewData["Title"] = "Đọc truyện chữ online";
+}
+
+<link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+
+<section class="hero">
+    <div class="hero-orb hero-orb-one"></div>
+    <div class="hero-orb hero-orb-two"></div>
+    <div class="site-container hero-inner">
+        <div class="hero-copy">
+            <span class="hero-kicker">HÀNG NGÀN THẾ GIỚI ĐANG CHỜ BẠN</span>
+            <h1>Đắm mình trong<br /><em>từng câu chuyện.</em></h1>
+            <p>Khám phá tiểu thuyết mới, lưu hành trình đọc và gặp gỡ cộng đồng yêu truyện chữ.</p>
+            <div class="hero-actions">
+                <a class="button button-primary" href="#featured">Khám phá ngay</a>
+                <a class="button button-secondary" href="#latest">Truyện mới cập nhật</a>
+            </div>
+            <div class="hero-stats">
+                <span><strong>12K+</strong> đầu truyện</span>
+                <span><strong>350K+</strong> chương</span>
+                <span><strong>80K+</strong> độc giả</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="notice-bar">
+    <div class="site-container">
+        <span class="notice-dot"></span>
+        <p><strong>StoryNest Beta:</strong> Theo dõi truyện để không bỏ lỡ chương mới và tiếp tục đọc trên mọi thiết bị.</p>
+        <a asp-controller="Account" asp-action="Register">Tham gia ngay →</a>
+    </div>
+</section>
+
+<div class="site-container home-layout">
+    <div class="home-main">
+        <section id="featured" class="home-section">
+            <div class="section-heading">
+                <div>
+                    <span class="section-eyebrow">TUYỂN CHỌN CHO BẠN</span>
+                    <h2>Truyện nổi bật</h2>
+                </div>
+                <a href="#">Xem tất cả <span>→</span></a>
+            </div>
+
+            <div class="novel-grid">
+                @foreach (var novel in Model.FeaturedNovels)
+                {
+                    <article class="novel-card">
+                        <a class="novel-cover cover-@novel.CoverTheme" href="#" aria-label="@novel.Title">
+                            <span class="cover-shine"></span>
+                            <span class="cover-symbol">✦</span>
+                            <strong>@novel.Title</strong>
+                            <small>@novel.Author</small>
+                            <span class="status-badge">@novel.Status</span>
+                        </a>
+                        <div class="novel-info">
+                            <h3><a href="#">@novel.Title</a></h3>
+                            <p>@novel.LatestChapter</p>
+                            <div>
+                                <span>◉ @novel.ViewCount.ToString("N0")</span>
+                                <button type="button" aria-label="Theo dõi @novel.Title">♡</button>
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+        </section>
+
+        <section id="latest" class="home-section latest-section">
+            <div class="section-heading">
+                <div>
+                    <span class="section-eyebrow">VỪA LÊN SÓNG</span>
+                    <h2>Chương mới cập nhật</h2>
+                </div>
+                <a href="#">Xem tất cả <span>→</span></a>
+            </div>
+
+            <div class="chapter-list">
+                @foreach (var chapter in Model.LatestChapters)
+                {
+                    <article class="chapter-row">
+                        <span class="chapter-icon">文</span>
+                        <div class="chapter-novel">
+                            <h3><a href="#">@chapter.NovelTitle</a></h3>
+                            <span>@chapter.Category</span>
+                        </div>
+                        <a class="chapter-name" href="#">@chapter.ChapterTitle</a>
+                        <time>@chapter.UpdatedText</time>
+                    </article>
+                }
+            </div>
+        </section>
+    </div>
+
+    <aside class="home-sidebar">
+        <section class="sidebar-panel ranking-panel">
+            <div class="panel-heading">
+                <span>THỊNH HÀNH</span>
+                <h2>Đọc nhiều tuần này</h2>
+            </div>
+            <ol class="ranking-list">
+                @foreach (var novel in Model.PopularNovels)
+                {
+                    <li>
+                        <span class="rank-number">@novel.Rank.ToString("00")</span>
+                        <div>
+                            <a href="#">@novel.Title</a>
+                            <p>@novel.Author · @novel.ViewCount.ToString("N0") lượt đọc</p>
+                        </div>
+                    </li>
+                }
+            </ol>
+        </section>
+
+        <section id="categories" class="sidebar-panel category-panel">
+            <div class="panel-heading">
+                <span>KHÁM PHÁ</span>
+                <h2>Thể loại</h2>
+            </div>
+            <div class="category-cloud">
+                @foreach (var category in Model.Categories)
+                {
+                    <a href="#">@category</a>
+                }
+            </div>
+        </section>
+
+        <section class="join-card">
+            <span>✦</span>
+            <h2>Giữ lại mọi hành trình</h2>
+            <p>Đăng ký để lưu lịch sử đọc và theo dõi những bộ truyện bạn yêu thích.</p>
+            <a asp-controller="Account" asp-action="Register">Tạo tài khoản miễn phí</a>
+        </section>
+    </aside>
+</div>

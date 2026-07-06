@@ -1,0 +1,728 @@
+.hero {
+    position: relative;
+    overflow: hidden;
+    min-height: 520px;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    background:
+        linear-gradient(90deg, rgba(5, 8, 16, .96) 0%, rgba(5, 8, 16, .83) 39%, rgba(5, 8, 16, .18) 72%, rgba(5, 8, 16, .12) 100%),
+        url("../images/home/storynest-hero.png") center / cover no-repeat,
+        #090d16;
+    isolation: isolate;
+}
+
+.hero::before {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: .22;
+    background:
+        linear-gradient(rgba(255, 255, 255, .045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .045) 1px, transparent 1px);
+    background-size: 54px 54px;
+    mask-image: linear-gradient(to right, black, transparent 80%);
+    content: "";
+}
+
+.hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+}
+
+.hero-orb-one {
+    top: 20px;
+    right: 20%;
+    width: 280px;
+    height: 280px;
+    background: rgba(124, 91, 230, .2);
+}
+
+.hero-orb-two {
+    right: 4%;
+    bottom: -100px;
+    width: 330px;
+    height: 330px;
+    background: rgba(35, 166, 167, .12);
+}
+
+.hero-inner {
+    display: flex;
+    align-items: center;
+    min-height: 520px;
+}
+
+.hero-copy {
+    position: relative;
+    z-index: 3;
+    max-width: 660px;
+}
+
+.hero-kicker,
+.section-eyebrow,
+.panel-heading > span {
+    color: #9e8efc;
+    font-size: .72rem;
+    font-weight: 850;
+    letter-spacing: .16em;
+}
+
+.hero h1 {
+    max-width: 680px;
+    margin: 14px 0 18px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(3rem, 6vw, 5.15rem);
+    font-weight: 500;
+    line-height: .98;
+    letter-spacing: -.055em;
+}
+
+.hero h1 em {
+    color: #aa9bff;
+    font-weight: 500;
+}
+
+.hero-copy > p {
+    max-width: 580px;
+    margin: 0;
+    color: #a1aabc;
+    font-size: 1.04rem;
+    line-height: 1.7;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 30px 0 34px;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 22px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 10px;
+    font-size: .9rem;
+    font-weight: 750;
+    transition: .18s ease;
+}
+
+.button-primary {
+    border-color: #856ff4;
+    background: #806bf0;
+    box-shadow: 0 12px 28px rgba(93, 70, 204, .28);
+}
+
+.button-primary:hover {
+    color: white;
+    background: #927ff8;
+    transform: translateY(-2px);
+}
+
+.button-secondary {
+    color: #dbe0eb;
+    background: rgba(255, 255, 255, .045);
+}
+
+.button-secondary:hover {
+    color: white;
+    background: rgba(255, 255, 255, .09);
+}
+
+.hero-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    color: #788397;
+    font-size: .76rem;
+}
+
+.hero-stats span {
+    display: grid;
+}
+
+.hero-stats strong {
+    color: #eceafa;
+    font-family: Georgia, serif;
+    font-size: 1.25rem;
+}
+
+.hero-art {
+    position: relative;
+    min-height: 390px;
+    perspective: 1200px;
+}
+
+.floating-book {
+    position: absolute;
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 7px 13px 13px 7px;
+    box-shadow: -18px 22px 45px rgba(0, 0, 0, .45);
+    font-family: Georgia, serif;
+    transform: rotateY(-13deg) rotateZ(2deg);
+}
+
+.floating-book::before,
+.novel-cover::before {
+    position: absolute;
+    inset: 0;
+    opacity: .42;
+    background:
+        radial-gradient(circle at 50% 28%, transparent 0 18%, rgba(255, 255, 255, .24) 18.5% 19%, transparent 19.5%),
+        repeating-radial-gradient(circle at center, transparent 0 16px, rgba(255, 255, 255, .1) 17px 18px);
+    content: "";
+}
+
+.book-main {
+    top: 30px;
+    left: 26%;
+    z-index: 3;
+    width: 245px;
+    height: 340px;
+    background: linear-gradient(150deg, #473779, #161c3c 58%, #0aa1a0);
+}
+
+.book-main small,
+.book-main span {
+    position: relative;
+}
+
+.book-main small {
+    margin-bottom: auto;
+    font-family: Inter, sans-serif;
+    font-size: .55rem;
+    letter-spacing: .14em;
+}
+
+.book-main span {
+    font-size: 1.65rem;
+    line-height: 1.05;
+}
+
+.book-main i {
+    position: absolute;
+    top: 72px;
+    left: 50%;
+    width: 85px;
+    height: 85px;
+    border: 1px solid rgba(255, 255, 255, .5);
+    border-radius: 50%;
+    transform: translateX(-50%);
+}
+
+.book-main i::after {
+    position: absolute;
+    inset: 16px;
+    border: 1px solid rgba(255, 255, 255, .4);
+    border-radius: 50%;
+    content: "";
+}
+
+.book-back {
+    top: 70px;
+    left: 5%;
+    width: 190px;
+    height: 285px;
+    color: #eee8ff;
+    background: linear-gradient(145deg, #161b37, #573d85);
+    transform: rotateY(-10deg) rotateZ(-8deg);
+}
+
+.book-front {
+    right: 2%;
+    bottom: 8px;
+    z-index: 4;
+    width: 165px;
+    height: 245px;
+    background: linear-gradient(145deg, #17354a, #7566bd);
+    transform: rotateY(-18deg) rotateZ(10deg);
+}
+
+.notice-bar {
+    border-bottom: 1px solid rgba(255, 255, 255, .07);
+    background: #111722;
+}
+
+.notice-bar .site-container {
+    display: flex;
+    align-items: center;
+    min-height: 58px;
+    gap: 12px;
+}
+
+.notice-bar p {
+    margin: 0;
+    color: #9da6b8;
+    font-size: .86rem;
+}
+
+.notice-bar strong {
+    color: #e5e2f5;
+}
+
+.notice-bar a {
+    margin-left: auto;
+    color: #aa9bff;
+    font-size: .82rem;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.notice-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #8b75f6;
+    box-shadow: 0 0 0 5px rgba(139, 117, 246, .12);
+}
+
+.home-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 310px;
+    align-items: start;
+    gap: 34px;
+    padding-top: 72px;
+}
+
+.home-section {
+    margin-bottom: 78px;
+}
+
+.section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 20px;
+}
+
+.section-heading h2,
+.panel-heading h2 {
+    margin: 5px 0 0;
+    font-family: Georgia, serif;
+    font-size: 1.8rem;
+    font-weight: 500;
+}
+
+.section-heading > a {
+    color: #919bad;
+    font-size: .82rem;
+    font-weight: 650;
+}
+
+.section-heading > a:hover {
+    color: white;
+}
+
+.novel-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px 20px;
+}
+
+.novel-card {
+    min-width: 0;
+}
+
+.novel-cover {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    aspect-ratio: 3 / 4.25;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px 16px;
+    border: 1px solid rgba(255, 255, 255, .13);
+    border-radius: 7px;
+    box-shadow: 0 18px 35px rgba(0, 0, 0, .28);
+    transition: transform .2s ease, box-shadow .2s ease;
+    isolation: isolate;
+}
+
+.novel-cover::after {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(transparent 30%, rgba(3, 5, 12, .92));
+    content: "";
+}
+
+.novel-cover:hover {
+    color: white;
+    transform: translateY(-5px);
+    box-shadow: 0 24px 42px rgba(0, 0, 0, .38);
+}
+
+.cover-violet { background: linear-gradient(145deg, #6e4a9a, #191d40 62%, #15172d); }
+.cover-rose { background: linear-gradient(145deg, #a85170, #361d37 58%, #171625); }
+.cover-amber { background: linear-gradient(145deg, #b97842, #423124 58%, #171719); }
+.cover-cyan { background: linear-gradient(145deg, #337c89, #1b3d55 58%, #141925); }
+.cover-emerald { background: linear-gradient(145deg, #477d67, #203e39 58%, #111a1a); }
+.cover-indigo { background: linear-gradient(145deg, #4e66ad, #24294f 58%, #151727); }
+
+.cover-symbol {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    color: rgba(255, 255, 255, .82);
+    font-size: 3.5rem;
+    text-shadow: 0 0 28px white;
+    transform: translateX(-50%);
+}
+
+.novel-cover strong,
+.novel-cover small {
+    position: relative;
+    z-index: 2;
+}
+
+.novel-cover strong {
+    font-family: Georgia, serif;
+    font-size: 1.06rem;
+    line-height: 1.15;
+}
+
+.novel-cover small {
+    margin-top: 6px;
+    color: rgba(255, 255, 255, .65);
+    font-size: .7rem;
+}
+
+.status-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 3;
+    padding: 5px 8px;
+    border-radius: 20px;
+    color: #e9e6ff;
+    background: rgba(7, 9, 18, .68);
+    font-size: .6rem;
+    font-weight: 750;
+    backdrop-filter: blur(8px);
+}
+
+.novel-info h3 {
+    overflow: hidden;
+    margin: 13px 0 5px;
+    font-size: .93rem;
+    font-weight: 750;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.novel-info h3 a:hover,
+.chapter-row a:hover,
+.ranking-list a:hover {
+    color: #b3a6ff;
+}
+
+.novel-info p {
+    overflow: hidden;
+    margin: 0;
+    color: #7e899d;
+    font-size: .73rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.novel-info > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 9px;
+    color: #626d80;
+    font-size: .68rem;
+}
+
+.novel-info button {
+    color: #7f899b;
+    cursor: pointer;
+    border: 0;
+    background: none;
+    font-size: 1.22rem;
+}
+
+.novel-info button:hover {
+    color: #ff6e9e;
+}
+
+.chapter-list {
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 12px;
+    background: #0e131d;
+}
+
+.chapter-row {
+    display: grid;
+    grid-template-columns: 38px minmax(180px, 1.2fr) minmax(170px, 1fr) 90px;
+    align-items: center;
+    min-height: 78px;
+    padding: 10px 18px;
+    gap: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, .06);
+}
+
+.chapter-row:last-child {
+    border-bottom: 0;
+}
+
+.chapter-icon {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    color: #a999ff;
+    border-radius: 8px;
+    background: rgba(139, 117, 246, .12);
+    font-family: serif;
+    place-items: center;
+}
+
+.chapter-novel {
+    min-width: 0;
+}
+
+.chapter-novel h3 {
+    overflow: hidden;
+    margin: 0 0 4px;
+    font-size: .83rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chapter-novel span,
+.chapter-row time {
+    color: #707b8f;
+    font-size: .68rem;
+}
+
+.chapter-name {
+    overflow: hidden;
+    color: #b8c0cf;
+    font-size: .76rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chapter-row time {
+    text-align: right;
+}
+
+.home-sidebar {
+    position: sticky;
+    top: 98px;
+    display: grid;
+    gap: 22px;
+}
+
+.sidebar-panel,
+.join-card {
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 14px;
+    background: #0e131d;
+}
+
+.panel-heading {
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, .07);
+}
+
+.panel-heading h2 {
+    font-size: 1.28rem;
+}
+
+.ranking-list {
+    margin: 0;
+    padding: 5px 18px 12px;
+    list-style: none;
+}
+
+.ranking-list li {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    align-items: center;
+    padding: 14px 0;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, .06);
+}
+
+.ranking-list li:last-child {
+    border-bottom: 0;
+}
+
+.rank-number {
+    color: #606b7e;
+    font-family: Georgia, serif;
+    font-size: 1.1rem;
+}
+
+.ranking-list li:first-child .rank-number {
+    color: #ad9eff;
+}
+
+.ranking-list a {
+    display: block;
+    overflow: hidden;
+    font-size: .78rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ranking-list p {
+    margin: 5px 0 0;
+    color: #687386;
+    font-size: .65rem;
+}
+
+.category-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 18px;
+    gap: 9px;
+}
+
+.category-cloud a {
+    padding: 7px 11px;
+    color: #aeb7c7;
+    border: 1px solid rgba(255, 255, 255, .09);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, .025);
+    font-size: .7rem;
+}
+
+.category-cloud a:hover {
+    color: white;
+    border-color: #7561dc;
+    background: rgba(117, 97, 220, .12);
+}
+
+.join-card {
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+    background:
+        radial-gradient(circle at 95% 5%, rgba(153, 131, 255, .25), transparent 40%),
+        linear-gradient(145deg, #1a1930, #101522);
+}
+
+.join-card > span {
+    color: #a999ff;
+    font-size: 1.8rem;
+}
+
+.join-card h2 {
+    margin: 12px 0 8px;
+    font-family: Georgia, serif;
+    font-size: 1.35rem;
+}
+
+.join-card p {
+    color: #909aad;
+    font-size: .76rem;
+    line-height: 1.6;
+}
+
+.join-card a {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 10px 13px;
+    border-radius: 8px;
+    background: #806bf0;
+    font-size: .72rem;
+    font-weight: 750;
+}
+
+@media (max-width: 1020px) {
+    .hero-inner {
+        grid-template-columns: 1.15fr .85fr;
+    }
+
+    .book-front {
+        display: none;
+    }
+
+    .home-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .home-sidebar {
+        position: static;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .join-card {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 760px) {
+    .hero {
+        min-height: auto;
+    }
+
+    .hero-inner {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding: 76px 0 64px;
+    }
+
+    .hero-art {
+        display: none;
+    }
+
+    .notice-bar .site-container {
+        align-items: flex-start;
+        padding: 15px 0;
+    }
+
+    .notice-bar a {
+        display: none;
+    }
+
+    .novel-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .chapter-row {
+        grid-template-columns: 36px 1fr auto;
+    }
+
+    .chapter-name {
+        display: none;
+    }
+
+    .home-sidebar {
+        grid-template-columns: 1fr;
+    }
+
+    .join-card {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 440px) {
+    .hero h1 {
+        font-size: 2.75rem;
+    }
+
+    .hero-stats {
+        gap: 18px;
+    }
+
+    .home-layout {
+        padding-top: 52px;
+    }
+
+    .novel-grid {
+        gap: 24px 13px;
+    }
+}

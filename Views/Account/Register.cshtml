@@ -1,0 +1,142 @@
+@model RegisterViewModel
+
+@{
+    ViewData["Title"] = "Đăng ký";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Đăng ký - StoryNest</title>
+    <link rel="stylesheet" href="~/css/register.css" asp-append-version="true" />
+</head>
+<body>
+    <main class="register-page">
+        <section class="register-shell" aria-labelledby="register-title">
+            <aside class="brand-panel" aria-label="StoryNest">
+                <div class="brand-glow"></div>
+                <div class="brand-content">
+                    <div class="brand-mark" aria-hidden="true">
+                        <svg viewBox="0 0 64 64" role="img">
+                            <path d="M13 13.5c8.4 0 14.7 2.1 19 6.3v31.7c-4.3-4.2-10.6-6.3-19-6.3V13.5Z" />
+                            <path d="M51 13.5c-8.4 0-14.7 2.1-19 6.3v31.7c4.3-4.2 10.6-6.3 19-6.3V13.5Z" />
+                            <path class="brand-mark-line" d="M19 22.5c4.2.4 7.2 1.5 9 3.2M19 30.5c4.2.4 7.2 1.5 9 3.2M45 22.5c-4.2.4-7.2 1.5-9 3.2M45 30.5c-4.2.4-7.2 1.5-9 3.2" />
+                        </svg>
+                    </div>
+                    <p class="brand-name">StoryNest</p>
+                    <p class="brand-tagline">Mỗi chương truyện, một thế giới mới.</p>
+                </div>
+            </aside>
+
+            <div class="form-panel">
+                <div class="form-container">
+                    <header class="form-heading">
+                        <span class="eyebrow">BẮT ĐẦU HÀNH TRÌNH</span>
+                        <h1 id="register-title">Tạo tài khoản</h1>
+                        <p>Đăng ký để lưu truyện yêu thích và tiếp tục đọc trên mọi thiết bị.</p>
+                    </header>
+
+                    <form asp-controller="Account" asp-action="Register" method="post" class="register-form">
+                        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label asp-for="DisplayName"></label>
+                                <input asp-for="DisplayName" placeholder="Tên của bạn" autocomplete="name" />
+                                <span asp-validation-for="DisplayName" class="field-error"></span>
+                            </div>
+
+                            <div class="field-group">
+                                <label asp-for="Username"></label>
+                                <input asp-for="Username" placeholder="Ví dụ: docgia123" autocomplete="username" />
+                                <span asp-validation-for="Username" class="field-error"></span>
+                            </div>
+                        </div>
+
+                        <div class="field-group">
+                            <label asp-for="Email"></label>
+                            <input asp-for="Email" placeholder="name@example.com" autocomplete="email" />
+                            <span asp-validation-for="Email" class="field-error"></span>
+                        </div>
+
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label asp-for="Password"></label>
+                                <div class="password-field">
+                                    <input asp-for="Password" placeholder="Tối thiểu 8 ký tự" autocomplete="new-password" />
+                                    <button class="toggle-password" type="button" data-password-toggle="Password"
+                                            aria-label="Hiện mật khẩu" aria-pressed="false">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+                                            <circle cx="12" cy="12" r="2.5" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <span asp-validation-for="Password" class="field-error"></span>
+                            </div>
+
+                            <div class="field-group">
+                                <label asp-for="ConfirmPassword"></label>
+                                <div class="password-field">
+                                    <input asp-for="ConfirmPassword" placeholder="Nhập lại mật khẩu" autocomplete="new-password" />
+                                    <button class="toggle-password" type="button" data-password-toggle="ConfirmPassword"
+                                            aria-label="Hiện mật khẩu xác nhận" aria-pressed="false">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+                                            <circle cx="12" cy="12" r="2.5" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <span asp-validation-for="ConfirmPassword" class="field-error"></span>
+                            </div>
+                        </div>
+
+                        <div class="terms-group">
+                            <input asp-for="AcceptTerms" />
+                            <label asp-for="AcceptTerms">
+                                Tôi đồng ý với
+                                <a asp-controller="Home" asp-action="Privacy">điều khoản sử dụng</a>
+                                và chính sách bảo mật.
+                            </label>
+                        </div>
+                        <span asp-validation-for="AcceptTerms" class="field-error terms-error"></span>
+
+                        <button class="submit-button" type="submit">
+                            <span>Tạo tài khoản</span>
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="m9 18 6-6-6-6" />
+                            </svg>
+                        </button>
+
+                        <p class="login-prompt">
+                            Đã có tài khoản?
+                            <a asp-controller="Account" asp-action="Login">Đăng nhập</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        document.querySelectorAll("[data-password-toggle]").forEach((button) => {
+            button.addEventListener("click", () => {
+                const input = document.getElementById(button.dataset.passwordToggle);
+                const isVisible = input.type === "text";
+                input.type = isVisible ? "password" : "text";
+                button.setAttribute("aria-pressed", String(!isVisible));
+                button.setAttribute(
+                    "aria-label",
+                    isVisible ? "Hiện mật khẩu" : "Ẩn mật khẩu"
+                );
+            });
+        });
+    </script>
+</body>
+</html>

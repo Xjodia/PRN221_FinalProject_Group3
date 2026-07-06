@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - StoryNest</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/PRN221_FinalProject_Group3.styles.css" asp-append-version="true" />
+</head>
+<body class="site-body">
+    <header class="site-header">
+        <nav class="navbar navbar-expand-lg">
+            <div class="site-container nav-inner">
+                <a class="navbar-brand site-brand" asp-controller="Home" asp-action="Index">
+                    <span class="brand-icon" aria-hidden="true">S</span>
+                    <span>StoryNest</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavigation"
+                        aria-controls="mainNavigation" aria-expanded="false" aria-label="Mở menu">
+                    <span></span><span></span><span></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNavigation">
+                    <ul class="navbar-nav main-nav">
+                        <li class="nav-item"><a class="nav-link" href="#featured">Khám phá</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#latest">Mới cập nhật</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#categories">Thể loại</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Sáng tác</a></li>
+                    </ul>
+
+                    <form class="header-search" role="search">
+                        <input type="search" placeholder="Tìm tên truyện, tác giả..." aria-label="Tìm kiếm truyện" />
+                        <button type="submit" aria-label="Tìm kiếm">
+                            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+                        </button>
+                    </form>
+
+                    <div class="dropdown account-dropdown">
+                        <button class="account-button dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false" aria-label="Menu tài khoản">
+                            <span class="guest-avatar">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end account-menu">
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <li><span class="dropdown-header">Xin chào, @User.Identity.Name</span></li>
+                                <li><a class="dropdown-item" href="#">Tài khoản</a></li>
+                                <li><a class="dropdown-item" href="#">Lịch sử đọc</a></li>
+                                <li><a class="dropdown-item" href="#">Truyện theo dõi</a></li>
+                                <li>
+                                    <form asp-controller="Account" asp-action="Logout" method="post">
+                                        <button class="dropdown-item" type="submit">Đăng xuất</button>
+                                    </form>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="account-menu-heading">Tham gia StoryNest</li>
+                                <li>
+                                    <a class="dropdown-item primary-item" asp-controller="Account" asp-action="Register">
+                                        Đăng ký
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="Login">
+                                        Đăng nhập
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-container footer-inner">
+            <div>
+                <a class="site-brand footer-brand" asp-controller="Home" asp-action="Index">
+                    <span class="brand-icon">S</span><span>StoryNest</span>
+                </a>
+                <p>Nơi những câu chuyện tìm thấy người đọc của mình.</p>
+            </div>
+            <div class="footer-links">
+                <a asp-controller="Home" asp-action="Privacy">Chính sách bảo mật</a>
+                <a href="#">Điều khoản</a>
+                <span>© 2026 StoryNest</span>
+            </div>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
