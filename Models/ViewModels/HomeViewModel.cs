@@ -25,11 +25,17 @@ public class NovelCardViewModel
 
     public string CoverTheme { get; init; } = "violet";
 
+    public string CoverImage { get; init; } = string.Empty;
+
     public long ViewCount { get; init; }
 }
 
 public class LatestChapterViewModel
 {
+    public int NovelId { get; init; }
+
+    public int ChapterId { get; init; }
+
     public string NovelTitle { get; init; } = string.Empty;
 
     public string ChapterTitle { get; init; } = string.Empty;
@@ -41,6 +47,8 @@ public class LatestChapterViewModel
 
 public class PopularNovelViewModel
 {
+    public int Id { get; init; }
+
     public int Rank { get; init; }
 
     public string Title { get; init; } = string.Empty;

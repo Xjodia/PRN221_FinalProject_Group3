@@ -1,0 +1,136 @@
+@model ChapterDetailViewModel
+
+@{
+    ViewData["Title"] = $"{Model.NovelTitle} - Chương {Model.ChapterNumber}";
+}
+
+<link rel="stylesheet" href="~/css/chapter-detail.css" asp-append-version="true" />
+
+<main class="chapter-reader">
+    <section class="chapter-heading">
+        <a class="novel-link" asp-controller="Novel" asp-action="Detail" asp-route-id="@Model.NovelId">@Model.NovelTitle</a>
+        <h1>Chương @Model.ChapterNumber: @Model.ChapterTitle</h1>
+        <p>
+            <a href="#comments">@Model.CommentCount bình luận</a>
+            <span>·</span>
+            <span>Độ dài: @Model.WordCountText từ</span>
+            <span>·</span>
+            <span>Cập nhật: @Model.UpdatedAtText</span>
+        </p>
+    </section>
+
+    <article class="chapter-content rte-content">
+        @Html.Raw(Model.Content)
+    </article>
+
+    <nav class="chapter-nav" aria-label="Điều hướng chương">
+        @if (Model.PreviousChapterId.HasValue)
+        {
+            <a asp-controller="Chapter" asp-action="Detail" asp-route-id="@Model.PreviousChapterId.Value">⏮ Chương trước</a>
+        }
+        else
+        {
+            <span>⏮ Chương trước</span>
+        }
+
+        <a asp-controller="Novel" asp-action="Detail" asp-route-id="@Model.NovelId">⌂ Chi tiết truyện</a>
+
+        @if (Model.NextChapterId.HasValue)
+        {
+            <a asp-controller="Chapter" asp-action="Detail" asp-route-id="@Model.NextChapterId.Value">Chương sau ⏭</a>
+        }
+        else
+        {
+            <span>Chương sau ⏭</span>
+        }
+    </nav>
+
+    <section id="comments" class="chapter-comments">
+        <header class="comment-section-header">
+            <h2>Bình luận (@Model.CommentCount)</h2>
+            <p>Báo cáo bình luận không phù hợp ở <a href="#">đây</a></p>
+        </header>
+
+        @if (TempData["CommentError"] is string error)
+        {
+            <div class="comment-alert">@error</div>
+        }
+
+        <form class="comment-form main-comment-form" asp-controller="Chapter" asp-action="Comment" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="ChapterId" value="@Model.ChapterId" />
+            <textarea class="tinymce-comment" name="Content" placeholder="Viết bình luận của bạn..."></textarea>
+            <div class="comment-submit-row">
+                <span>Comment dùng TinyMCE, nội dung lưu dạng RTE/HTML.</span>
+                <button type="submit">Đăng bình luận</button>
+            </div>
+        </form>
+
+        <div class="comment-list">
+            @foreach (var comment in Model.Comments)
+            {
+                <partial name="_ChapterComment" model="comment" />
+            }
+        </div>
+    </section>
+</main>
+
+<aside class="reader-toolbar" aria-label="Thanh công cụ đọc truyện">
+    <a asp-controller="Chapter" asp-action="Detail" asp-route-id="@Model.PreviousChapterId" class="@(!Model.PreviousChapterId.HasValue ? "disabled" : string.Empty)">⏮</a>
+    <a asp-controller="Novel" asp-action="Detail" asp-route-id="@Model.NovelId">⌂</a>
+    <button type="button" data-reader-font> A </button>
+    <button type="button" data-reader-width>⇔</button>
+    <a href="#comments">▣</a>
+    <a asp-controller="Chapter" asp-action="Detail" asp-route-id="@Model.NextChapterId" class="@(!Model.NextChapterId.HasValue ? "disabled" : string.Empty)">⏭</a>
+</aside>
+
+@section Scripts {
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        const tinyMceConfig = {
+            selector: 'textarea.tinymce-comment',
+            menubar: false,
+            branding: false,
+            height: 180,
+            skin: 'oxide-dark',
+            content_css: 'dark',
+            plugins: 'autoresize lists link image emoticons',
+            toolbar: 'undo redo | bold italic underline strikethrough | forecolor | bullist numlist | link image emoticons | removeformat',
+            valid_elements: 'p,br,strong/b,em/i,u,s,span[style],a[href|target|rel],ul,ol,li,blockquote,code,pre,img[src|alt|width|height]',
+            extended_valid_elements: 'span[class|style]',
+            setup: editor => {
+                editor.on('change keyup', () => editor.save());
+            }
+        };
+
+        if (window.tinymce) {
+            tinymce.init(tinyMceConfig);
+        }
+
+        document.querySelectorAll('[data-reply-toggle]').forEach(button => {
+            button.addEventListener('click', () => {
+                const target = document.querySelector(button.dataset.replyToggle);
+                if (!target) {
+                    return;
+                }
+
+                target.hidden = !target.hidden;
+
+                if (!target.hidden && window.tinymce) {
+                    const textarea = target.querySelector('textarea.tinymce-comment');
+                    if (textarea && !tinymce.get(textarea.id)) {
+                        tinymce.init({ ...tinyMceConfig, selector: `#${textarea.id}` });
+                    }
+                }
+            });
+        });
+
+        document.querySelector('[data-reader-font]')?.addEventListener('click', () => {
+            document.body.classList.toggle('large-reader-font');
+        });
+
+        document.querySelector('[data-reader-width]')?.addEventListener('click', () => {
+            document.body.classList.toggle('wide-reader');
+        });
+    </script>
+}

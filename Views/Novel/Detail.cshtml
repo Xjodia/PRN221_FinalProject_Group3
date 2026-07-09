@@ -1,0 +1,196 @@
+@model NovelDetailViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<link rel="stylesheet" href="~/css/novel-detail.css" asp-append-version="true" />
+
+<section class="novel-hero">
+    <div class="site-container novel-hero-inner">
+        <div class="detail-cover image-cover">
+            <img src="@Model.CoverImage" alt="Bìa truyện @Model.Title" />
+        </div>
+
+        <div class="novel-hero-content">
+            <div class="breadcrumb-lite">
+                <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+                <span>/</span>
+                <span>Chi tiết truyện</span>
+            </div>
+
+            <h1>@Model.Title</h1>
+
+            <div class="novel-meta">
+                <span>✎ @Model.AuthorName</span>
+                <span>◇ @Model.TypeName</span>
+            </div>
+
+            <div class="tag-list">
+                @foreach (var category in Model.Categories.Take(6))
+                {
+                    <a href="#">@category</a>
+                }
+            </div>
+
+            <div class="hero-actions-row">
+                @if (Model.FirstChapterId.HasValue)
+                {
+                    <a class="read-now-button" asp-controller="Chapter" asp-action="Detail" asp-route-id="@Model.FirstChapterId.Value">Đọc ngay</a>
+                }
+                else
+                {
+                    <a class="read-now-button" href="#chapters">Đọc ngay</a>
+                }
+                <button type="button" class="icon-action recommend-action" aria-label="Đề cử">
+                    ♙ <span>9</span>
+                </button>
+                <button type="button" class="icon-action" aria-label="Thích">♡</button>
+                <button type="button" class="icon-action" aria-label="Theo dõi">▱</button>
+            </div>
+
+            <div class="stat-row">
+                @foreach (var item in Model.Statistics)
+                {
+                    <div class="stat-item @(item.IsHighlight ? "is-highlight" : string.Empty)">
+                        <strong>@item.Value</strong>
+                        <span>@item.Label</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="site-container novel-detail-layout">
+    <main class="novel-detail-main">
+        <section class="detail-panel synopsis-panel">
+            <div class="detail-tabs">
+                <a class="active" href="#intro">Giới thiệu</a>
+                <a href="#chapters">D.S Chương (@Model.Chapters.Count)</a>
+            </div>
+
+            <div id="intro" class="synopsis-content">
+                @foreach (var paragraph in Model.Synopsis.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    <p>@paragraph</p>
+                }
+            </div>
+
+            <div class="synopsis-footer">
+                <span class="status-dot">@Model.Status</span>
+                <time>▣ @Model.UpdatedAtText</time>
+            </div>
+        </section>
+
+        <section id="chapters" class="detail-panel chapter-panel">
+            <div class="panel-title-row">
+                <div>
+                    <span>Danh sách chương</span>
+                    <h2>Chương mới nhất</h2>
+                </div>
+                <a href="#">Xem toàn bộ</a>
+            </div>
+
+            <div class="detail-chapter-list">
+                @foreach (var chapter in Model.Chapters)
+                {
+                    <a class="detail-chapter-item" asp-controller="Chapter" asp-action="Detail" asp-route-id="@chapter.Id">
+                        <span class="chapter-number">Chương @chapter.Number</span>
+                        <strong>@chapter.Title</strong>
+                        @if (chapter.IsNew)
+                        {
+                            <em>Mới</em>
+                        }
+                        <time>@chapter.UpdatedAtText</time>
+                    </a>
+                }
+            </div>
+        </section>
+
+        <section class="detail-panel comment-panel">
+            <div class="comment-header">
+                <div class="comment-tabs">
+                    <button type="button" class="active">Bình luận (@Model.Comments.Count)</button>
+                    <button type="button">Đánh giá (0)</button>
+                </div>
+                <label class="comment-toggle">
+                    <span>Bình luận chương</span>
+                    <input type="checkbox" checked />
+                    <i></i>
+                </label>
+            </div>
+
+            <div class="comment-editor">
+                <div class="editor-toolbar">
+                    <span>↶</span>
+                    <span>↷</span>
+                    <b>B</b>
+                    <i>I</i>
+                    <u>U</u>
+                    <span>⌫</span>
+                    <span>🔗</span>
+                    <span>▧</span>
+                    <button type="button">Gửi 𖤐</button>
+                </div>
+                <textarea placeholder="Viết bình luận của bạn..."></textarea>
+            </div>
+
+            <div class="comment-list">
+                @foreach (var comment in Model.Comments)
+                {
+                    <article class="comment-item">
+                        <div class="comment-avatar">@comment.Initials</div>
+                        <div class="comment-body">
+                            @if (comment.IsPinned)
+                            {
+                                <span class="pin-label">📌 Đã ghim</span>
+                            }
+                            <div class="comment-author-line">
+                                <strong>@comment.UserName</strong>
+                                <span>@comment.Level</span>
+                            </div>
+                            <p>@comment.Content</p>
+                            <div class="comment-actions">
+                                <button type="button">♡ Thích</button>
+                                <button type="button">↩ Trả lời</button>
+                                <time>@comment.CreatedAtText</time>
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+        </section>
+    </main>
+
+    <aside class="novel-detail-sidebar">
+        <section class="author-card">
+            <div class="author-banner"></div>
+            <div class="author-info">
+                <div class="author-avatar">@Model.Author.Initials</div>
+                <h2>@Model.Author.DisplayName <span>@Model.Author.Level</span></h2>
+                <p class="joined-text">▣ @Model.Author.JoinedText</p>
+                <p>@Model.Author.Bio</p>
+                <button type="button">♙ Theo dõi</button>
+                <a href="#">Xem hồ sơ</a>
+            </div>
+        </section>
+
+        <section class="recommend-panel">
+            <h2>Có thể bạn thích</h2>
+            @foreach (var novel in Model.RecommendedNovels)
+            {
+                <a class="recommend-item" asp-controller="Novel" asp-action="Detail" asp-route-id="@novel.Id">
+                    <span class="mini-cover image-cover">
+                        <img src="@novel.CoverImage" alt="Bìa truyện @novel.Title" />
+                    </span>
+                    <span>
+                        <strong>@novel.Title</strong>
+                        <small>@novel.Author</small>
+                        <em>★ @novel.RatingText</em>
+                    </span>
+                </a>
+            }
+        </section>
+    </aside>
+</div>

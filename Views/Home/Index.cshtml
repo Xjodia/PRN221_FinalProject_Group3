@@ -19,9 +19,9 @@
                 <a class="button button-secondary" href="#latest">Truyện mới cập nhật</a>
             </div>
             <div class="hero-stats">
-                <span><strong>12K+</strong> đầu truyện</span>
-                <span><strong>350K+</strong> chương</span>
-                <span><strong>80K+</strong> độc giả</span>
+                <span><strong>@Model.FeaturedNovels.Count</strong> đầu truyện</span>
+                <span><strong>@Model.LatestChapters.Count</strong> chương mới</span>
+                <span><strong>@Model.Categories.Count</strong> thể loại</span>
             </div>
         </div>
     </div>
@@ -50,18 +50,15 @@
                 @foreach (var novel in Model.FeaturedNovels)
                 {
                     <article class="novel-card">
-                        <a class="novel-cover cover-@novel.CoverTheme" href="#" aria-label="@novel.Title">
-                            <span class="cover-shine"></span>
-                            <span class="cover-symbol">✦</span>
-                            <strong>@novel.Title</strong>
-                            <small>@novel.Author</small>
+                        <a class="novel-cover image-novel-cover" asp-controller="Novel" asp-action="Detail" asp-route-id="@novel.Id" aria-label="@novel.Title">
+                            <img src="@novel.CoverImage" alt="Bìa truyện @novel.Title" />
                             <span class="status-badge">@novel.Status</span>
                         </a>
                         <div class="novel-info">
-                            <h3><a href="#">@novel.Title</a></h3>
+                            <h3><a asp-controller="Novel" asp-action="Detail" asp-route-id="@novel.Id">@novel.Title</a></h3>
                             <p>@novel.LatestChapter</p>
                             <div>
-                                <span>◉ @novel.ViewCount.ToString("N0")</span>
+                                <span>◎ @novel.ViewCount.ToString("N0")</span>
                                 <button type="button" aria-label="Theo dõi @novel.Title">♡</button>
                             </div>
                         </div>
@@ -85,10 +82,10 @@
                     <article class="chapter-row">
                         <span class="chapter-icon">文</span>
                         <div class="chapter-novel">
-                            <h3><a href="#">@chapter.NovelTitle</a></h3>
+                            <h3><a asp-controller="Novel" asp-action="Detail" asp-route-id="@chapter.NovelId">@chapter.NovelTitle</a></h3>
                             <span>@chapter.Category</span>
                         </div>
-                        <a class="chapter-name" href="#">@chapter.ChapterTitle</a>
+                        <a class="chapter-name" asp-controller="Chapter" asp-action="Detail" asp-route-id="@chapter.ChapterId">@chapter.ChapterTitle</a>
                         <time>@chapter.UpdatedText</time>
                     </article>
                 }
@@ -108,7 +105,7 @@
                     <li>
                         <span class="rank-number">@novel.Rank.ToString("00")</span>
                         <div>
-                            <a href="#">@novel.Title</a>
+                            <a asp-controller="Novel" asp-action="Detail" asp-route-id="@novel.Id">@novel.Title</a>
                             <p>@novel.Author · @novel.ViewCount.ToString("N0") lượt đọc</p>
                         </div>
                     </li>

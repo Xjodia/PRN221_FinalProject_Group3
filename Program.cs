@@ -26,7 +26,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<UserDao>();
+builder.Services.AddScoped<NovelDao>();
+builder.Services.AddScoped<ChapterDao>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<INovelService, NovelService>();
+builder.Services.AddScoped<IChapterService, ChapterService>();
 
 var app = builder.Build();
 

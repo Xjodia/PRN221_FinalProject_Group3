@@ -174,4 +174,4 @@ C:\Users\Xjodia\AppData\Local\Temp\PRN221-login-build\PRN221_FinalProject_Group3
 C:\Users\Xjodia\AppData\Local\Temp\PRN221-login-build\PRN221_FinalProject_Group3.runtimeconfig.json
 C:\Users\Xjodia\AppData\Local\Temp\PRN221-login-build\PRN221_FinalProject_Group3.dll
 C:\Users\Xjodia\AppData\Local\Temp\PRN221-login-build\PRN221_FinalProject_Group3.pdb
-D:\Learning\PRN222\Study\PRN221_FinalProject_Group3\PRN221_FinalProject_Group3\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+D:\Learning\PRN222\Study\PRN221_FinalProject_Group3\PRN221_FinalProject_Group3\obj\Debug\net8.0\PRN221_FinalProject_Group3.sourcelink.json

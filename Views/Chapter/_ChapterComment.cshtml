@@ -1,0 +1,55 @@
+@model ChapterCommentItemViewModel
+
+@{
+    var replyFormId = $"reply-form-{Model.Id}";
+    var replyEditorId = $"reply-editor-{Model.Id}";
+}
+
+<article class="reader-comment @(Model.IsOwner ? "owner-comment" : string.Empty)">
+    <div class="reader-comment-avatar">@Model.Initials</div>
+
+    <div class="reader-comment-body">
+        <div class="reader-comment-card">
+            <div class="reader-comment-head">
+                <strong>@Model.UserName</strong>
+                <span class="level-tag">@Model.Level</span>
+                @if (Model.IsOwner)
+                {
+                    <span class="owner-tag">Chủ thớt</span>
+                }
+                <button type="button" class="comment-menu" aria-label="Mở menu">⌄</button>
+            </div>
+
+            <div class="reader-comment-content rte-comment">
+                @Html.Raw(Model.Content)
+            </div>
+
+            <div class="reader-comment-actions">
+                <time>@Model.CreatedAtText</time>
+                <button type="button">♡ Thích</button>
+                <button type="button" data-reply-toggle="#@replyFormId">↩ Trả lời</button>
+            </div>
+        </div>
+
+        <form id="@replyFormId" class="comment-form reply-form" asp-controller="Chapter" asp-action="Comment" method="post" hidden>
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="ChapterId" value="@Model.ChapterId" />
+            <input type="hidden" name="ParentCommentId" value="@Model.Id" />
+            <textarea id="@replyEditorId" class="tinymce-comment" name="Content" placeholder="Trả lời @Model.UserName..."></textarea>
+            <div class="comment-submit-row">
+                <span>Reply sẽ được lưu dưới bình luận này.</span>
+                <button type="submit">Gửi trả lời</button>
+            </div>
+        </form>
+
+        @if (Model.Replies.Count > 0)
+        {
+            <div class="reader-replies">
+                @foreach (var reply in Model.Replies)
+                {
+                    <partial name="_ChapterComment" model="reply" />
+                }
+            </div>
+        }
+    </div>
+</article>
