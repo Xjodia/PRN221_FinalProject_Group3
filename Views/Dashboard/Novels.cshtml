@@ -1,0 +1,84 @@
+@model PRN221_FinalProject_Group3.Models.ViewModels.MyNovelListViewModel
+
+@{
+    ViewData["Title"] = "Truyện của tôi";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+}
+
+<section class="dashboard-page">
+    <div class="dashboard-topbar">
+        <a class="dashboard-brand" asp-controller="Dashboard" asp-action="Index">
+            <span>⚙</span> Bảng điều khiển
+        </a>
+        <nav>
+            <a asp-controller="Home" asp-action="Index">⌂ Trang chủ</a>
+            <a class="danger-link" asp-controller="Dashboard" asp-action="CreateNovel">⊕ Đăng truyện</a>
+            <a class="active" asp-controller="Dashboard" asp-action="Novels">Tác phẩm</a>
+        </nav>
+    </div>
+
+    <div class="dashboard-warning">
+        Không đăng bất cứ truyện, chương truyện, hình ảnh nào có nội dung người lớn 18+
+    </div>
+
+    <main class="dashboard-container">
+        @if (TempData["SuccessMessage"] is string successMessage)
+        {
+            <div class="dashboard-alert success">@successMessage</div>
+        }
+        @if (TempData["ErrorMessage"] is string errorMessage)
+        {
+            <div class="dashboard-alert danger">@errorMessage</div>
+        }
+
+        <section class="dashboard-card">
+            <div class="card-header-row">
+                <h1>Truyện của tôi</h1>
+                <a class="danger-button" asp-controller="Dashboard" asp-action="CreateNovel">+ Thêm truyện</a>
+            </div>
+
+            <form class="manager-search" asp-controller="Dashboard" asp-action="Novels" method="get">
+                <input type="search" name="searchTerm" value="@Model.SearchTerm" placeholder="Tìm kiếm tên truyện..." />
+                <button type="submit">Tìm kiếm</button>
+            </form>
+
+            <div class="manager-table">
+                <div class="table-head">
+                    <span>Tên truyện</span>
+                    <span>Người đăng</span>
+                    <span>Nhóm dịch</span>
+                    <span>Chương</span>
+                    <span>Quản lý</span>
+                </div>
+
+                @if (!Model.Novels.Any())
+                {
+                    <div class="empty-state">Bạn chưa có truyện nào. Bắt đầu đăng một bộ mới nhé.</div>
+                }
+                else
+                {
+                    @foreach (var novel in Model.Novels)
+                    {
+                        <div class="table-row">
+                            <a asp-controller="Dashboard" asp-action="Detail" asp-route-id="@novel.Id">@novel.Title</a>
+                            <span>@novel.PublisherName</span>
+                            <span>@(novel.TranslationGroup ?? "Cá nhân")</span>
+                            <span>@novel.ChapterCount</span>
+                            <div class="row-actions">
+                                <a asp-controller="Dashboard" asp-action="Detail" asp-route-id="@novel.Id">Quản lý</a>
+                                <a asp-controller="Dashboard" asp-action="EditNovel" asp-route-id="@novel.Id">Sửa</a>
+                                <form asp-controller="Dashboard" asp-action="DeleteNovel" asp-route-id="@novel.Id" method="post"
+                                      onsubmit="return confirm('Xóa truyện này và toàn bộ chương?');">
+                                    <button type="submit">Xóa</button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </section>
+    </main>
+</section>

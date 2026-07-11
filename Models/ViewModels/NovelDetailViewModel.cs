@@ -89,6 +89,10 @@ public class RecommendedNovelViewModel
 
 public class CommentViewModel
 {
+    public int Id { get; init; }
+
+    public int NovelId { get; init; }
+
     public string UserName { get; init; } = string.Empty;
 
     public string Initials { get; init; } = string.Empty;
@@ -100,4 +104,18 @@ public class CommentViewModel
     public string CreatedAtText { get; init; } = string.Empty;
 
     public bool IsPinned { get; init; }
+
+    public IReadOnlyList<CommentViewModel> Replies { get; init; } = [];
+}
+
+public class NovelCommentInputViewModel
+{
+    [System.ComponentModel.DataAnnotations.Required]
+    public int NovelId { get; set; }
+
+    public int? ParentCommentId { get; set; }
+
+    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Vui lòng nhập nội dung bình luận.")]
+    [System.ComponentModel.DataAnnotations.StringLength(3000, ErrorMessage = "Bình luận không được vượt quá 3000 ký tự.")]
+    public string Content { get; set; } = string.Empty;
 }

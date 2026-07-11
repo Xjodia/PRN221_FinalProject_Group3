@@ -91,15 +91,64 @@ BEGIN
         [Id] int NOT NULL IDENTITY,
         [Title] nvarchar(250) NOT NULL,
         [AuthorId] int NOT NULL,
+        [OtherNames] nvarchar(500) NULL,
+        [OriginalAuthor] nvarchar(150) NULL,
+        [Illustrator] nvarchar(150) NULL,
+        [StoryType] nvarchar(50) NOT NULL DEFAULT N'Truyện dịch',
+        [TranslationGroup] nvarchar(150) NULL,
         [Synopsis] nvarchar(max) NOT NULL,
+        [Note] nvarchar(max) NULL,
         [CoverImage] nvarchar(500) NULL,
         [Status] nvarchar(20) NOT NULL,
+        [IsActive] bit NOT NULL DEFAULT CAST(1 AS bit),
         [ViewCount] bigint NOT NULL,
         [CreatedAt] datetimeoffset NOT NULL,
         [UpdatedAt] datetimeoffset NOT NULL,
         CONSTRAINT [PK_Novels] PRIMARY KEY ([Id]),
         CONSTRAINT [FK_Novels_Users_AuthorId] FOREIGN KEY ([AuthorId]) REFERENCES [Users] ([Id]) ON DELETE NO ACTION
     );
+END;
+GO
+
+IF COL_LENGTH('Novels', 'OtherNames') IS NULL
+BEGIN
+    ALTER TABLE [Novels] ADD [OtherNames] nvarchar(500) NULL;
+END;
+GO
+
+IF COL_LENGTH('Novels', 'OriginalAuthor') IS NULL
+BEGIN
+    ALTER TABLE [Novels] ADD [OriginalAuthor] nvarchar(150) NULL;
+END;
+GO
+
+IF COL_LENGTH('Novels', 'Illustrator') IS NULL
+BEGIN
+    ALTER TABLE [Novels] ADD [Illustrator] nvarchar(150) NULL;
+END;
+GO
+
+IF COL_LENGTH('Novels', 'StoryType') IS NULL
+BEGIN
+    ALTER TABLE [Novels] ADD [StoryType] nvarchar(50) NOT NULL CONSTRAINT [DF_Novels_StoryType] DEFAULT N'Truyện dịch';
+END;
+GO
+
+IF COL_LENGTH('Novels', 'IsActive') IS NULL
+BEGIN
+    ALTER TABLE [Novels] ADD [IsActive] bit NOT NULL CONSTRAINT [DF_Novels_IsActive] DEFAULT CAST(1 AS bit);
+END;
+GO
+
+IF COL_LENGTH('Novels', 'TranslationGroup') IS NULL
+BEGIN
+    ALTER TABLE [Novels] ADD [TranslationGroup] nvarchar(150) NULL;
+END;
+GO
+
+IF COL_LENGTH('Novels', 'Note') IS NULL
+BEGIN
+    ALTER TABLE [Novels] ADD [Note] nvarchar(max) NULL;
 END;
 GO
 
@@ -338,7 +387,29 @@ GO
    ========================================================= */
 
 DECLARE @CoverImage nvarchar(500) = N'https://i.imgur.com/FTAaZvy.jpeg';
+DECLARE @ChapterImage nvarchar(500) = N'https://acacia.wiki.gg/images/thumb/Yuki_end_01.png/1920px-Yuki_end_01.png?92c92d';
 DECLARE @Now datetimeoffset = SYSDATETIMEOFFSET();
+
+IF OBJECT_ID(N'[NovelComments]', N'U') IS NULL
+BEGIN
+    CREATE TABLE [NovelComments] (
+        [Id] int NOT NULL IDENTITY,
+        [NovelId] int NOT NULL,
+        [UserId] int NOT NULL,
+        [ParentCommentId] int NULL,
+        [Content] nvarchar(3000) NOT NULL,
+        [CreatedAt] datetimeoffset NOT NULL,
+        [UpdatedAt] datetimeoffset NOT NULL,
+        CONSTRAINT [PK_NovelComments] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_NovelComments_Novels_NovelId] FOREIGN KEY ([NovelId]) REFERENCES [Novels] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_NovelComments_Users_UserId] FOREIGN KEY ([UserId]) REFERENCES [Users] ([Id]),
+        CONSTRAINT [FK_NovelComments_NovelComments_ParentCommentId] FOREIGN KEY ([ParentCommentId]) REFERENCES [NovelComments] ([Id])
+    );
+
+    CREATE INDEX [IX_NovelComments_NovelId] ON [NovelComments] ([NovelId]);
+    CREATE INDEX [IX_NovelComments_UserId] ON [NovelComments] ([UserId]);
+    CREATE INDEX [IX_NovelComments_ParentCommentId] ON [NovelComments] ([ParentCommentId]);
+END;
 
 IF NOT EXISTS (SELECT 1 FROM [Users] WHERE [Username] = N'seed_author')
 BEGIN
@@ -358,6 +429,16 @@ BEGIN
         (N'seed_reader', N'seed.reader@storynest.local', N'seeded-account-not-for-login', N'Gwee', NULL,
          N'Độc giả thích để lại bình luận vui vẻ ở mỗi chương.',
          N'Reader', N'Active', 1, NULL, @Now, @Now);
+END;
+
+IF NOT EXISTS (SELECT 1 FROM [Users] WHERE [Username] = N'test_admin')
+BEGIN
+    INSERT INTO [Users]
+        ([Username], [Email], [PasswordHash], [DisplayName], [AvatarUrl], [Bio], [Role], [Status], [IsEmailVerified], [LastLoginAt], [CreatedAt], [UpdatedAt])
+    VALUES
+        (N'test_admin', N'test.admin@storynest.local', N'$2a$11$ei.E5Cjy.qnh9JyDmx1OJOkSThBgxuSQMjHimJW8ieUgcHaGcbW4a', N'Admin Test', NULL,
+         N'Tài khoản admin dùng để kiểm thử hệ thống.',
+         N'Admin', N'Active', 1, NULL, @Now, @Now);
 END;
 
 IF NOT EXISTS (SELECT 1 FROM [Categories] WHERE [Name] = N'Yandere') INSERT INTO [Categories] ([Name]) VALUES (N'Yandere');
@@ -528,21 +609,32 @@ DECLARE @MainNovelId int = (SELECT [Id] FROM [Novels] WHERE [Title] = N'Xuyên t
 DECLARE @MainChapterId int = (SELECT TOP 1 [Id] FROM [Chapters] WHERE [NovelId] = @MainNovelId ORDER BY [ChapterNumber]);
 DECLARE @ReaderId int = (SELECT [Id] FROM [Users] WHERE [Username] = N'seed_reader');
 
-IF @MainChapterId IS NOT NULL
-BEGIN
-    UPDATE [Chapters]
-    SET [Content] = N'<p><em>Ào—</em></p>
+UPDATE [Chapters]
+SET [Content] = N'<p><em>Ào—</em></p>
 <p>Nước lạnh buốt thấu tim trút ào từ chiếc xô sắt xuống. Cái lạnh cắt da men theo mái tóc dài bạc trắng rồi nhanh chóng thấm ướt bộ đồng phục giản dị trên người thiếu nữ.</p>
-<p>Những dòng nước chảy ngoằn ngoèo trên gò má cô, còn màu đồng phục cũng vì ngấm nước mà sẫm xuống mấy phần. Chiếc quần tất trắng vốn đã mang lại cảm giác bí bức cùng đôi bốt da đen lập tức hút đầy nước.</p>
-<blockquote>“Lạnh... thật.”</blockquote>
+<p>Những dòng nước chảy ngoằn ngoèo trên gò má cô, còn màu đồng phục cũng vì ngấm nước mà sẫm xuống mấy phần. Chiếc quần tất trắng vốn đã mang lại cảm giác bí bức cùng đôi bốt da đen lập tức hút đầy nước. Sau khoảnh khắc mát lạnh ngắn ngủi, chúng chỉ khiến cảm giác ngột ngạt quanh người càng trở nên rõ rệt hơn.</p>
+<p>“Lạnh... thật.”</p>
 <p>Bị đối xử như vậy, thiếu nữ vẫn không hề nổi giận mà chỉ bình thản nói ra cảm nhận của mình lúc này.</p>
-<p><img src="' + @CoverImage + N'" alt="Minh họa chương 1" /></p>
-<p>...</p>
-<p>Nếu cô thật sự tốt bụng đến mức ấy thì khó xử thật đấy.</p>
-<p>Bởi Utsunomiya Hoshino chỉ một lòng muốn chết.</p>',
-        [UpdatedAt] = DATEADD(day, -1, @Now)
-    WHERE [Id] = @MainChapterId;
-END;
+<p><img src="' + @ChapterImage + N'" alt="Minh họa chương 1" /></p>
+<p>“Lạnh là đúng rồi. Bị dội nước lạnh mà không lạnh mới lạ. Nhưng cô không thể thấy giận hơn một chút sao? Không thể lộ ra vẻ tức tối hơn một chút à?”</p>
+<p>Đứng đối diện cô là thủ phạm mang tên Utsunomiya Hoshino. Cậu thiếu niên vẫn đang xách chiếc xô sắt đã trút sạch nước và nhìn cô với vẻ khó hiểu đến cực điểm.</p>
+<p>“Sao cô vẫn cứ trưng cái mặt người chết mà còn cười tủm tỉm ấy ra vậy?”</p>',
+    [UpdatedAt] = DATEADD(day, -1, @Now)
+WHERE [ChapterNumber] = 1
+  AND [NovelId] IN
+  (
+      SELECT [Id]
+      FROM [Novels]
+      WHERE [Title] IN
+      (
+          N'Xuyên thành một nữ phụ phản diện? Tôi đã trở thành 1 loli yandere',
+          N'Arknights: Nhóm Chat Của Các Game Thủ',
+          N'Vô Lâm Dị Khách',
+          N'Cô vợ đa nhân cách quá yêu tôi',
+          N'Người giữ thư viện cuối cùng',
+          N'Sau khi trọng sinh tôi chỉ muốn đọc sách'
+      )
+  );
 
 IF @MainChapterId IS NOT NULL
 BEGIN
@@ -578,6 +670,35 @@ BEGIN
     BEGIN
         INSERT INTO [ChapterComments] ([ChapterId], [UserId], [ParentCommentId], [Content], [CreatedAt], [UpdatedAt])
         VALUES (@MainChapterId, @ReaderId, @OwnerCommentId, N'<p>Ok chủ thớt, để mình đọc kỹ rồi góp ý sau.</p>', DATEADD(day, -3, @Now), DATEADD(day, -3, @Now));
+    END;
+END;
+
+IF @MainNovelId IS NOT NULL
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM [NovelComments] WHERE [NovelId] = @MainNovelId AND [UserId] = @AuthorId AND [Content] = N'<p>Đây là khu bình luận tổng của truyện, không gắn vào chương nào.</p>')
+    BEGIN
+        INSERT INTO [NovelComments] ([NovelId], [UserId], [ParentCommentId], [Content], [CreatedAt], [UpdatedAt])
+        VALUES (@MainNovelId, @AuthorId, NULL, N'<p>Đây là khu bình luận tổng của truyện, không gắn vào chương nào.</p>', DATEADD(day, -2, @Now), DATEADD(day, -2, @Now));
+    END;
+
+    IF NOT EXISTS (SELECT 1 FROM [NovelComments] WHERE [NovelId] = @MainNovelId AND [UserId] = @ReaderId AND [Content] = N'<p>Ok, vậy comment ở detail sẽ nằm riêng ngoài truyện.</p>')
+    BEGIN
+        INSERT INTO [NovelComments] ([NovelId], [UserId], [ParentCommentId], [Content], [CreatedAt], [UpdatedAt])
+        VALUES (@MainNovelId, @ReaderId, NULL, N'<p>Ok, vậy comment ở detail sẽ nằm riêng ngoài truyện.</p>', DATEADD(day, -1, @Now), DATEADD(day, -1, @Now));
+    END;
+
+    DECLARE @NovelOwnerCommentId int = (
+        SELECT TOP 1 [Id]
+        FROM [NovelComments]
+        WHERE [NovelId] = @MainNovelId AND [UserId] = @AuthorId
+        ORDER BY [Id]
+    );
+
+    IF @NovelOwnerCommentId IS NOT NULL
+       AND NOT EXISTS (SELECT 1 FROM [NovelComments] WHERE [ParentCommentId] = @NovelOwnerCommentId AND [UserId] = @ReaderId)
+    BEGIN
+        INSERT INTO [NovelComments] ([NovelId], [UserId], [ParentCommentId], [Content], [CreatedAt], [UpdatedAt])
+        VALUES (@MainNovelId, @ReaderId, @NovelOwnerCommentId, N'<p>Reply ngoài detail cũng hoạt động riêng.</p>', DATEADD(hour, -12, @Now), DATEADD(hour, -12, @Now));
     END;
 END;
 

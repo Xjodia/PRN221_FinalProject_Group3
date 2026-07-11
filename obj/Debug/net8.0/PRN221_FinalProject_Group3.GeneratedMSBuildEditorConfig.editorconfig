@@ -31,6 +31,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Account/Settings.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxTZXR0aW5ncy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Chapter/Detail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcHRlclxEZXRhaWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -39,8 +43,48 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcHRlclxfQ2hhcHRlckNvbW1lbnQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Dashboard/CreateChapter.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXENyZWF0ZUNoYXB0ZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Dashboard/CreateNovel.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXENyZWF0ZU5vdmVsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Dashboard/Detail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXERldGFpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Dashboard/EditChapter.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXEVkaXRDaGFwdGVyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Dashboard/EditNovel.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXEVkaXROb3ZlbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Dashboard/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Dashboard/Novels.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXE5vdmVscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Dashboard/_ChapterForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXF9DaGFwdGVyRm9ybS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Dashboard/_NovelForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXF9Ob3ZlbEZvcm0uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Home/NotFoundPage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxOb3RGb3VuZFBhZ2UuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Home/Privacy.cshtml]
@@ -51,12 +95,32 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm92ZWxcRGV0YWlsLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Novel/Search.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm92ZWxcU2VhcmNoLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Novel/_NovelComment.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm92ZWxcX05vdmVsQ29tbWVudC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Profile/Detail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZmlsZVxEZXRhaWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/System/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3lzdGVtXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/System/Novels.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3lzdGVtXE5vdmVscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/Learning/PRN222/Study/PRN221_FinalProject_Group3/PRN221_FinalProject_Group3/Views/_ViewImports.cshtml]

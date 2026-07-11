@@ -1,0 +1,47 @@
+@model PRN221_FinalProject_Group3.Models.ViewModels.SystemHomeViewModel
+
+@{
+    ViewData["Title"] = "Hệ thống";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/system.css" asp-append-version="true" />
+}
+
+<section class="system-page">
+    <div class="system-shell">
+        <header class="system-header">
+            <span class="system-badge">ADMIN</span>
+            <h1>Hệ thống</h1>
+            <p>Khu quản trị chỉ dành cho tài khoản Admin.</p>
+        </header>
+
+        <div class="system-stats">
+            <div>
+                <strong>@Model.ActiveNovelCount</strong>
+                <span>Truyện trên hệ thống</span>
+            </div>
+            <div>
+                <strong>@Model.DeletedNovelCount</strong>
+                <span>Truyện đã bị xóa</span>
+            </div>
+            <div>
+                <strong>@Model.UserCount</strong>
+                <span>Tài khoản</span>
+            </div>
+        </div>
+
+        <div class="system-actions">
+            <a class="system-action danger" asp-controller="System" asp-action="Novels">
+                <span>📚</span>
+                <strong>Quản lý truyện</strong>
+                <small>Truyện đang hoạt động và truyện đã bị xóa mềm.</small>
+            </a>
+            <a class="system-action danger disabled" href="#" aria-disabled="true">
+                <span>👤</span>
+                <strong>Quản lý tài khoản</strong>
+                <small>Để sau theo yêu cầu hiện tại.</small>
+            </a>
+        </div>
+    </div>
+</section>

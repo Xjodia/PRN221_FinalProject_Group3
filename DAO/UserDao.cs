@@ -56,6 +56,22 @@ public class UserDao
             cancellationToken);
     }
 
+    public Task<User?> GetByIdAsync(
+        int userId,
+        bool asTracking = false,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _context.Users
+            .Where(user => user.Id == userId);
+
+        if (!asTracking)
+        {
+            query = query.AsNoTracking();
+        }
+
+        return query.FirstOrDefaultAsync(cancellationToken);
+    }
+
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         return _context.SaveChangesAsync(cancellationToken);

@@ -115,49 +115,31 @@
                     <button type="button">Đánh giá (0)</button>
                 </div>
                 <label class="comment-toggle">
-                    <span>Bình luận chương</span>
+                    <span>Bình luận truyện</span>
                     <input type="checkbox" checked />
                     <i></i>
                 </label>
             </div>
 
-            <div class="comment-editor">
-                <div class="editor-toolbar">
-                    <span>↶</span>
-                    <span>↷</span>
-                    <b>B</b>
-                    <i>I</i>
-                    <u>U</u>
-                    <span>⌫</span>
-                    <span>🔗</span>
-                    <span>▧</span>
-                    <button type="button">Gửi 𖤐</button>
+            @if (TempData["CommentError"] is string error)
+            {
+                <div class="novel-comment-alert">@error</div>
+            }
+
+            <form class="novel-comment-form" asp-controller="Novel" asp-action="Comment" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="NovelId" value="@Model.Id" />
+                <textarea class="tinymce-comment" name="Content" placeholder="Viết bình luận của bạn..."></textarea>
+                <div class="novel-comment-submit">
+                    <span>Comment dùng TinyMCE, nội dung lưu dạng RTE/HTML.</span>
+                    <button type="submit">Đăng bình luận</button>
                 </div>
-                <textarea placeholder="Viết bình luận của bạn..."></textarea>
-            </div>
+            </form>
 
             <div class="comment-list">
                 @foreach (var comment in Model.Comments)
                 {
-                    <article class="comment-item">
-                        <div class="comment-avatar">@comment.Initials</div>
-                        <div class="comment-body">
-                            @if (comment.IsPinned)
-                            {
-                                <span class="pin-label">📌 Đã ghim</span>
-                            }
-                            <div class="comment-author-line">
-                                <strong>@comment.UserName</strong>
-                                <span>@comment.Level</span>
-                            </div>
-                            <p>@comment.Content</p>
-                            <div class="comment-actions">
-                                <button type="button">♡ Thích</button>
-                                <button type="button">↩ Trả lời</button>
-                                <time>@comment.CreatedAtText</time>
-                            </div>
-                        </div>
-                    </article>
+                    <partial name="_NovelComment" model="comment" />
                 }
             </div>
         </section>
@@ -194,3 +176,46 @@
         </section>
     </aside>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.tiny.cloud/1/cesumgwlg6qzucft6kmxasfetpz7be8c07c9cj23occm8sx6/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        const tinyMceConfig = {
+            selector: 'textarea.tinymce-comment',
+            menubar: false,
+            branding: false,
+            height: 180,
+            skin: 'oxide-dark',
+            content_css: 'dark',
+            plugins: 'autoresize lists link image emoticons',
+            toolbar: 'undo redo | bold italic underline strikethrough | forecolor | bullist numlist | link image emoticons | removeformat',
+            valid_elements: 'p,br,strong/b,em/i,u,s,span[style],a[href|target|rel],ul,ol,li,blockquote,code,pre,img[src|alt|width|height]',
+            extended_valid_elements: 'span[class|style]',
+            setup: editor => {
+                editor.on('change keyup', () => editor.save());
+            }
+        };
+
+        if (window.tinymce) {
+            tinymce.init(tinyMceConfig);
+        }
+
+        document.querySelectorAll('[data-reply-toggle]').forEach(button => {
+            button.addEventListener('click', () => {
+                const target = document.querySelector(button.dataset.replyToggle);
+                if (!target) {
+                    return;
+                }
+
+                target.hidden = !target.hidden;
+
+                if (!target.hidden && window.tinymce) {
+                    const textarea = target.querySelector('textarea.tinymce-comment');
+                    if (textarea && !tinymce.get(textarea.id)) {
+                        tinymce.init({ ...tinyMceConfig, selector: `#${textarea.id}` });
+                    }
+                }
+            });
+        });
+    </script>
+}

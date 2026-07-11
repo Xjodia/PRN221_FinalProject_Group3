@@ -1,0 +1,136 @@
+@model PRN221_FinalProject_Group3.Models.ViewModels.AccountSettingsViewModel
+
+@{
+    ViewData["Title"] = "Cài đặt tài khoản";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/account-settings.css" asp-append-version="true" />
+}
+
+<section class="settings-page">
+    <div class="settings-shell">
+        <header class="settings-heading">
+            <h1>Cài đặt</h1>
+            <p>
+                <a asp-controller="Profile" asp-action="Detail" asp-route-id="@Model.Profile.Id">Hồ sơ</a>
+                <span>/</span>
+                <strong>Cài đặt</strong>
+            </p>
+        </header>
+
+        @if (TempData["SuccessMessage"] is string successMessage)
+        {
+            <div class="settings-alert success">@successMessage</div>
+        }
+
+        <div class="settings-card">
+            <aside class="settings-sidebar">
+                <a href="#public-profile" class="settings-nav-item active">
+                    <span>♙</span>
+                    Hồ sơ cá nhân
+                </a>
+                <a href="#security" class="settings-nav-item">
+                    <span>▣</span>
+                    Tài khoản & Bảo mật
+                </a>
+            </aside>
+
+            <main class="settings-content">
+                <section id="public-profile" class="settings-section">
+                    <h2>Hồ sơ công khai</h2>
+                    <p class="section-note">Thông tin này sẽ hiển thị trên trang cá nhân của bạn.</p>
+
+                    <form asp-controller="Account" asp-action="UpdateProfile" method="post" class="settings-form">
+                        <div asp-validation-summary="ModelOnly" class="settings-validation"></div>
+                        <input type="hidden" name="Id" value="@Model.Profile.Id" />
+                        <input type="hidden" name="Username" value="@Model.Profile.Username" />
+                        <input type="hidden" name="Email" value="@Model.Profile.Email" />
+
+                        <div class="avatar-panel">
+                            <div class="settings-avatar">
+                                @if (!string.IsNullOrWhiteSpace(Model.Profile.AvatarUrl))
+                                {
+                                    <img src="@Model.Profile.AvatarUrl" alt="@Model.Profile.DisplayName" />
+                                }
+                                else
+                                {
+                                    <span>@Model.Profile.DisplayName.FirstOrDefault().ToString().ToUpperInvariant()</span>
+                                }
+                            </div>
+                            <div>
+                                <h3>Ảnh đại diện</h3>
+                                <p>Dán URL ảnh đại diện. Nếu bỏ trống, hệ thống sẽ dùng chữ cái đầu tên hiển thị.</p>
+                            </div>
+                        </div>
+
+                        <label class="field-block">
+                            <span>Tên hiển thị</span>
+                            <input name="DisplayName" value="@Model.Profile.DisplayName" maxlength="100" />
+                            <small>Tên hiển thị giới hạn từ 2 đến 100 ký tự.</small>
+                            <span class="field-error">@Html.ValidationMessage("DisplayName")</span>
+                        </label>
+
+                        <label class="field-block">
+                            <span>Ảnh đại diện URL</span>
+                            <input name="AvatarUrl" value="@Model.Profile.AvatarUrl" placeholder="https://..." />
+                            <span class="field-error">@Html.ValidationMessage("AvatarUrl")</span>
+                        </label>
+
+                        <label class="field-block">
+                            <span>Lời giới thiệu</span>
+                            <textarea name="Bio" rows="5" maxlength="500" placeholder="Kể chút gì đó về bạn...">@Model.Profile.Bio</textarea>
+                            <span class="field-error">@Html.ValidationMessage("Bio")</span>
+                        </label>
+
+                        <div class="readonly-grid">
+                            <label>
+                                <span>Tên đăng nhập</span>
+                                <input value="@Model.Profile.Username" disabled />
+                            </label>
+                            <label>
+                                <span>Email</span>
+                                <input value="@Model.Profile.Email" disabled />
+                            </label>
+                        </div>
+
+                        <button class="primary-settings-button" type="submit">Lưu thay đổi</button>
+                    </form>
+                </section>
+
+                <section id="security" class="settings-section security-section">
+                    <h2>Tài khoản & Bảo mật</h2>
+                    <p class="section-note">Quản lý mật khẩu đăng nhập của bạn.</p>
+
+                    <form asp-controller="Account" asp-action="ChangePassword" method="post" class="settings-form password-form">
+                        <div asp-validation-summary="ModelOnly" class="settings-validation"></div>
+
+                        <label class="field-block">
+                            <span>Mật khẩu hiện tại</span>
+                            <input name="CurrentPassword" type="password" autocomplete="current-password" placeholder="Để trống nếu chưa đặt" />
+                            <span class="field-error">@Html.ValidationMessage("CurrentPassword")</span>
+                        </label>
+
+                        <label class="field-block">
+                            <span>Mật khẩu mới</span>
+                            <input name="NewPassword" type="password" autocomplete="new-password" />
+                            <span class="field-error">@Html.ValidationMessage("NewPassword")</span>
+                        </label>
+
+                        <label class="field-block">
+                            <span>Xác nhận mật khẩu</span>
+                            <input name="ConfirmPassword" type="password" autocomplete="new-password" />
+                            <span class="field-error">@Html.ValidationMessage("ConfirmPassword")</span>
+                        </label>
+
+                        <button class="danger-settings-button" type="submit">Đổi mật khẩu</button>
+                    </form>
+                </section>
+            </main>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

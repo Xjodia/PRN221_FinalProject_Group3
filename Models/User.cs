@@ -52,6 +52,8 @@ public class User
     public ICollection<Follow> FollowedNovels { get; set; } = new List<Follow>();
 
     public ICollection<ChapterComment> ChapterComments { get; set; } = new List<ChapterComment>();
+
+    public ICollection<NovelComment> NovelComments { get; set; } = new List<NovelComment>();
 }
 
 public enum UserRole

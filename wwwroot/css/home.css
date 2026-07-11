@@ -69,16 +69,16 @@
 .hero h1 {
     max-width: 680px;
     margin: 14px 0 18px;
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: "Open Sans", "Segoe UI", Arial, sans-serif;
     font-size: clamp(3rem, 6vw, 5.15rem);
-    font-weight: 500;
+    font-weight: 850;
     line-height: .98;
     letter-spacing: -.055em;
 }
 
 .hero h1 em {
     color: #aa9bff;
-    font-weight: 500;
+    font-weight: 850;
 }
 
 .hero-copy > p {
@@ -145,7 +145,7 @@
 
 .hero-stats strong {
     color: #eceafa;
-    font-family: Georgia, serif;
+    font-family: "Open Sans", "Segoe UI", Arial, sans-serif;
     font-size: 1.25rem;
 }
 
@@ -165,7 +165,7 @@
     border: 1px solid rgba(255, 255, 255, .22);
     border-radius: 7px 13px 13px 7px;
     box-shadow: -18px 22px 45px rgba(0, 0, 0, .45);
-    font-family: Georgia, serif;
+    font-family: "Open Sans", "Segoe UI", Arial, sans-serif;
     transform: rotateY(-13deg) rotateZ(2deg);
 }
 
@@ -196,7 +196,7 @@
 
 .book-main small {
     margin-bottom: auto;
-    font-family: Inter, sans-serif;
+    font-family: "Open Sans", "Segoe UI", Arial, sans-serif;
     font-size: .55rem;
     letter-spacing: .14em;
 }
@@ -306,9 +306,9 @@
 .section-heading h2,
 .panel-heading h2 {
     margin: 5px 0 0;
-    font-family: Georgia, serif;
+    font-family: "Open Sans", "Segoe UI", Arial, sans-serif;
     font-size: 1.8rem;
-    font-weight: 500;
+    font-weight: 850;
 }
 
 .section-heading > a {
@@ -411,7 +411,7 @@
 }
 
 .novel-cover strong {
-    font-family: Georgia, serif;
+    font-family: "Open Sans", "Segoe UI", Arial, sans-serif;
     font-size: 1.06rem;
     line-height: 1.15;
 }
@@ -509,7 +509,7 @@
     color: #a999ff;
     border-radius: 8px;
     background: rgba(139, 117, 246, .12);
-    font-family: serif;
+    font-family: "Open Sans", "Segoe UI", Arial, sans-serif;
     place-items: center;
 }
 
@@ -587,7 +587,7 @@
 
 .rank-number {
     color: #606b7e;
-    font-family: Georgia, serif;
+    font-family: "Open Sans", "Segoe UI", Arial, sans-serif;
     font-size: 1.1rem;
 }
 
@@ -648,7 +648,7 @@
 
 .join-card h2 {
     margin: 12px 0 8px;
-    font-family: Georgia, serif;
+    font-family: "Open Sans", "Segoe UI", Arial, sans-serif;
     font-size: 1.35rem;
 }
 

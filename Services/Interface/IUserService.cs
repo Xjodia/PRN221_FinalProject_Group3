@@ -12,4 +12,18 @@ public interface IUserService
     Task<LoginResult> LoginAsync(
         LoginViewModel model,
         CancellationToken cancellationToken = default);
+
+    Task<AccountSettingsViewModel?> GetAccountSettingsAsync(
+        int userId,
+        CancellationToken cancellationToken = default);
+
+    Task<RegisterResult> UpdateProfileAsync(
+        ProfileEditViewModel model,
+        int userId,
+        CancellationToken cancellationToken = default);
+
+    Task<RegisterResult> ChangePasswordAsync(
+        ChangePasswordViewModel model,
+        int userId,
+        CancellationToken cancellationToken = default);
 }

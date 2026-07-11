@@ -23,7 +23,9 @@ public class ChapterDao
                 .ThenInclude(novel => novel.Author)
             .Include(chapter => chapter.Comments)
                 .ThenInclude(comment => comment.User)
-            .FirstOrDefaultAsync(chapter => chapter.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(
+                chapter => chapter.Id == id && chapter.Novel.IsActive,
+                cancellationToken);
     }
 
     public Task<Chapter?> GetPreviousChapterAsync(
@@ -34,6 +36,7 @@ public class ChapterDao
         return _context.Chapters
             .AsNoTracking()
             .Where(chapter => chapter.NovelId == novelId
+                              && chapter.Novel.IsActive
                               && chapter.ChapterNumber < currentChapterNumber)
             .OrderByDescending(chapter => chapter.ChapterNumber)
             .FirstOrDefaultAsync(cancellationToken);
@@ -47,6 +50,7 @@ public class ChapterDao
         return _context.Chapters
             .AsNoTracking()
             .Where(chapter => chapter.NovelId == novelId
+                              && chapter.Novel.IsActive
                               && chapter.ChapterNumber > currentChapterNumber)
             .OrderBy(chapter => chapter.ChapterNumber)
             .FirstOrDefaultAsync(cancellationToken);
@@ -57,7 +61,7 @@ public class ChapterDao
         CancellationToken cancellationToken = default)
     {
         return _context.Chapters.AnyAsync(
-            chapter => chapter.Id == chapterId,
+            chapter => chapter.Id == chapterId && chapter.Novel.IsActive,
             cancellationToken);
     }
 
@@ -67,7 +71,9 @@ public class ChapterDao
         CancellationToken cancellationToken = default)
     {
         return _context.ChapterComments.AnyAsync(
-            comment => comment.Id == commentId && comment.ChapterId == chapterId,
+            comment => comment.Id == commentId
+                       && comment.ChapterId == chapterId
+                       && comment.Chapter.Novel.IsActive,
             cancellationToken);
     }
 

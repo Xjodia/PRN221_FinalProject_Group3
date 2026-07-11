@@ -1,0 +1,116 @@
+@model PRN221_FinalProject_Group3.Models.ViewModels.ManagedNovelDetailViewModel
+
+@{
+    ViewData["Title"] = "Quản lý truyện";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+}
+
+<section class="dashboard-page">
+    <div class="dashboard-topbar">
+        <a class="dashboard-brand" asp-controller="Dashboard" asp-action="Index">
+            <span>⚙</span> Bảng điều khiển
+        </a>
+        <nav>
+            <a asp-controller="Dashboard" asp-action="Novels">Tác phẩm</a>
+            <a asp-controller="Dashboard" asp-action="CreateNovel">⊕ Đăng truyện</a>
+        </nav>
+    </div>
+
+    <div class="dashboard-warning">
+        Không đăng bất cứ truyện, chương truyện, hình ảnh nào có nội dung người lớn 18+
+    </div>
+
+    <main class="dashboard-container">
+        @if (TempData["SuccessMessage"] is string successMessage)
+        {
+            <div class="dashboard-alert success">@successMessage</div>
+        }
+
+        <div class="detail-tabs">
+            <span class="active">Thông tin</span>
+            <span>Danh sách Tập & Chương</span>
+            <a asp-controller="Dashboard" asp-action="EditNovel" asp-route-id="@Model.Id">✎ Sửa truyện</a>
+            <a asp-controller="Novel" asp-action="Detail" asp-route-id="@Model.Id">⊙ Xem truyện</a>
+        </div>
+
+        <section class="management-layout">
+            <aside class="cover-panel">
+                <img src="@Model.CoverImage" alt="@Model.Title" />
+                <a class="primary-button full" asp-controller="Dashboard" asp-action="EditNovel" asp-route-id="@Model.Id">✎ Sửa truyện</a>
+            </aside>
+
+            <article class="dashboard-card management-info">
+                <h1>@Model.Title</h1>
+                <div class="info-grid">
+                    <div>
+                        <span>Tác giả</span>
+                        <strong>@(Model.OriginalAuthor ?? "Chưa cập nhật")</strong>
+                    </div>
+                    <div>
+                        <span>Họa sĩ</span>
+                        <strong>@(Model.Illustrator ?? "Chưa cập nhật")</strong>
+                    </div>
+                    <div>
+                        <span>Loại truyện</span>
+                        <strong>@Model.StoryType</strong>
+                    </div>
+                    <div>
+                        <span>Nhóm dịch</span>
+                        <strong>@(Model.TranslationGroup ?? "Cá nhân")</strong>
+                    </div>
+                    <div>
+                        <span>Tình trạng</span>
+                        <strong>@Model.StatusText</strong>
+                    </div>
+                </div>
+
+                <h2>Tóm tắt</h2>
+                <div class="rte-box">@Html.Raw(Model.Synopsis)</div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Note))
+                {
+                    <h2>Chú thích thêm</h2>
+                    <div class="rte-box">@Html.Raw(Model.Note)</div>
+                }
+            </article>
+        </section>
+
+        <section class="dashboard-card chapter-manager">
+            <div class="card-header-row">
+                <h2>Danh sách Tập & Chương</h2>
+                <a class="outline-button" asp-controller="Dashboard" asp-action="CreateChapter" asp-route-novelId="@Model.Id">+ Thêm chương mới</a>
+            </div>
+
+            @if (!Model.Chapters.Any())
+            {
+                <div class="empty-state">Truyện này chưa có chương nào.</div>
+            }
+            else
+            {
+                <div class="chapter-list">
+                    @foreach (var chapter in Model.Chapters)
+                    {
+                        <div class="chapter-row">
+                            <div>
+                                <span>Chương @chapter.Number</span>
+                                <strong>@chapter.Title</strong>
+                                <small>Cập nhật: @chapter.UpdatedAtText</small>
+                            </div>
+                            <div class="row-actions">
+                                <a asp-controller="Chapter" asp-action="Detail" asp-route-id="@chapter.Id">Xem</a>
+                                <a asp-controller="Dashboard" asp-action="EditChapter" asp-route-id="@chapter.Id">Sửa</a>
+                                <form asp-controller="Dashboard" asp-action="DeleteChapter" asp-route-id="@chapter.Id" method="post"
+                                      onsubmit="return confirm('Xóa chương này?');">
+                                    <button type="submit">Xóa</button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    </main>
+</section>

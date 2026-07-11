@@ -1,0 +1,134 @@
+@model PRN221_FinalProject_Group3.Models.ViewModels.SearchViewModel
+
+@{
+    ViewData["Title"] = string.IsNullOrWhiteSpace(Model.Query)
+        ? "Tìm kiếm"
+        : $"Tìm kiếm \"{Model.Query}\"";
+
+    string BuildUrl(string? tab = null, string? status = null, string? sort = null)
+    {
+        return Url.Action(
+            "Search",
+            "Novel",
+            new
+            {
+                q = Model.Query,
+                tab = tab ?? Model.Tab,
+                status = status ?? Model.Status,
+                sort = sort ?? Model.Sort
+            }) ?? "#";
+    }
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/search.css" asp-append-version="true" />
+}
+
+<section class="search-page">
+    <div class="search-shell">
+        <header class="search-header">
+            @if (string.IsNullOrWhiteSpace(Model.Query))
+            {
+                <h1>Tìm kiếm</h1>
+                <p>Nhập tối thiểu 2 ký tự để tìm truyện hoặc thành viên.</p>
+            }
+            else
+            {
+                <h1>"@Model.Query"</h1>
+                <p>Tìm thấy @Model.TotalCount kết quả</p>
+            }
+        </header>
+
+        <nav class="search-tabs" aria-label="Loại kết quả">
+            <a class="@(Model.Tab == "all" ? "active" : null)" href="@BuildUrl(tab: "all")">☷ Tất cả</a>
+            <a class="@(Model.Tab == "novels" ? "active" : null)" href="@BuildUrl(tab: "novels")">▥ Truyện</a>
+            <a class="@(Model.Tab == "members" ? "active" : null)" href="@BuildUrl(tab: "members")">♙ Thành viên</a>
+        </nav>
+
+        <form class="search-filters" asp-controller="Novel" asp-action="Search" method="get">
+            <input type="hidden" name="q" value="@Model.Query" />
+            <input type="hidden" name="tab" value="@Model.Tab" />
+
+            <div class="filter-group">
+                <span>Trạng thái:</span>
+                <button class="@(Model.Status == "all" ? "active" : null)" type="submit" name="status" value="all">Tất cả</button>
+                <button class="@(Model.Status == "ongoing" ? "active" : null)" type="submit" name="status" value="ongoing">Đang ra</button>
+                <button class="@(Model.Status == "completed" ? "active" : null)" type="submit" name="status" value="completed">Xong</button>
+            </div>
+
+            <label class="sort-control">
+                Sắp xếp:
+                <select name="sort" onchange="this.form.submit()">
+                    <option value="relevance" selected="@(Model.Sort == "relevance")">Liên quan</option>
+                    <option value="latest" selected="@(Model.Sort == "latest")">Mới nhất</option>
+                    <option value="popular" selected="@(Model.Sort == "popular")">Xem nhiều</option>
+                </select>
+            </label>
+        </form>
+
+        @if (Model.Query.Length is > 0 and < 2)
+        {
+            <div class="search-empty">Vui lòng nhập tối thiểu 2 ký tự.</div>
+        }
+        else if (Model.TotalCount == 0)
+        {
+            <div class="search-empty">Không tìm thấy kết quả phù hợp.</div>
+        }
+
+        @if (Model.NovelResults.Any())
+        {
+            <section class="result-section">
+                <h2>▥ Tác phẩm</h2>
+                <div class="result-list">
+                    @foreach (var novel in Model.NovelResults)
+                    {
+                        <article class="novel-result-card">
+                            <a class="result-cover" asp-controller="Novel" asp-action="Detail" asp-route-id="@novel.Id">
+                                <img src="@novel.CoverImage" alt="@novel.Title" />
+                                <span>@novel.Status</span>
+                            </a>
+                            <div class="result-body">
+                                <div class="result-title-row">
+                                    <h3>
+                                        <a asp-controller="Novel" asp-action="Detail" asp-route-id="@novel.Id">@novel.Title</a>
+                                    </h3>
+                                    <span class="rating-pill">★ 5.0</span>
+                                </div>
+                                <p class="result-meta">♙ @novel.Author · <span>@novel.Category</span></p>
+                                <p class="result-summary">@novel.Synopsis</p>
+                                <div class="result-stats">
+                                    <span>☰ @novel.ChapterCount</span>
+                                    <span>⊙ @novel.ViewCount.ToString("N0")</span>
+                                    <span>◷ @novel.UpdatedText</span>
+                                </div>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </section>
+        }
+
+        @if (Model.MemberResults.Any())
+        {
+            <section class="result-section">
+                <h2>♙ Thành viên</h2>
+                <div class="member-grid">
+                    @foreach (var member in Model.MemberResults)
+                    {
+                        <article class="member-card">
+                            <a class="member-avatar" asp-controller="Profile" asp-action="Detail" asp-route-id="@member.Id">@member.Initials</a>
+                            <div>
+                                <h3>
+                                    <a asp-controller="Profile" asp-action="Detail" asp-route-id="@member.Id">@member.DisplayName</a>
+                                </h3>
+                                <p>@@@member.Username · @member.Role</p>
+                                <span>@member.NovelCount truyện đã đăng</span>
+                                <small>@member.Bio</small>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </section>
+        }
+    </div>
+</section>

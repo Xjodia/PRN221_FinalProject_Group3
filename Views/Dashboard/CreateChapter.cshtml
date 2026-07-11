@@ -1,0 +1,36 @@
+@model PRN221_FinalProject_Group3.Models.ViewModels.ChapterFormViewModel
+
+@{
+    ViewData["Title"] = "Thêm chương";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+}
+
+<section class="dashboard-page">
+    <div class="dashboard-topbar">
+        <a class="dashboard-brand" asp-controller="Dashboard" asp-action="Index">
+            <span>⚙</span> Bảng điều khiển
+        </a>
+        <nav>
+            <a asp-controller="Dashboard" asp-action="Detail" asp-route-id="@Model.NovelId">Quản lý truyện</a>
+        </nav>
+    </div>
+
+    <main class="dashboard-container narrow">
+        <section class="dashboard-card">
+            <h1>Thêm chương mới</h1>
+            <form asp-controller="Dashboard" asp-action="CreateChapter" method="post" class="dashboard-form">
+                <partial name="_ChapterForm" model="Model" />
+                <button class="primary-button" type="submit">Thêm chương</button>
+            </form>
+        </section>
+    </main>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.tiny.cloud/1/cesumgwlg6qzucft6kmxasfetpz7be8c07c9cj23occm8sx6/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="~/js/dashboard-editor.js" asp-append-version="true"></script>
+}

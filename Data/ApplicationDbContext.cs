@@ -18,6 +18,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<ReadingHistory> ReadingHistories => Set<ReadingHistory>();
     public DbSet<Follow> Follows => Set<Follow>();
     public DbSet<ChapterComment> ChapterComments => Set<ChapterComment>();
+    public DbSet<NovelComment> NovelComments => Set<NovelComment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,6 +38,8 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(novel => novel.Title);
             entity.HasIndex(novel => novel.AuthorId);
             entity.Property(novel => novel.Synopsis).HasColumnType("nvarchar(max)");
+            entity.Property(novel => novel.Note).HasColumnType("nvarchar(max)");
+            entity.Property(novel => novel.IsActive).HasDefaultValue(true);
             entity.Property(novel => novel.Status)
                 .HasConversion<string>()
                 .HasMaxLength(20);
@@ -127,6 +130,27 @@ public class ApplicationDbContext : DbContext
 
             entity.HasOne(comment => comment.User)
                 .WithMany(user => user.ChapterComments)
+                .HasForeignKey(comment => comment.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasOne(comment => comment.ParentComment)
+                .WithMany(comment => comment.Replies)
+                .HasForeignKey(comment => comment.ParentCommentId)
+                .OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<NovelComment>(entity =>
+        {
+            entity.HasIndex(comment => comment.NovelId);
+            entity.HasIndex(comment => comment.UserId);
+
+            entity.HasOne(comment => comment.Novel)
+                .WithMany(novel => novel.Comments)
+                .HasForeignKey(comment => comment.NovelId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(comment => comment.User)
+                .WithMany(user => user.NovelComments)
                 .HasForeignKey(comment => comment.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 

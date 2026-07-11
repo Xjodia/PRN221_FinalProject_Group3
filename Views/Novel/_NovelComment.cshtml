@@ -1,0 +1,49 @@
+@model CommentViewModel
+
+@{
+    var replyFormId = $"novel-reply-form-{Model.Id}";
+    var replyEditorId = $"novel-reply-editor-{Model.Id}";
+}
+
+<article class="comment-item @(Model.IsPinned ? "owner-comment" : string.Empty)">
+    <div class="comment-avatar">@Model.Initials</div>
+    <div class="comment-body">
+        @if (Model.IsPinned)
+        {
+            <span class="pin-label">Chủ thớt</span>
+        }
+        <div class="comment-author-line">
+            <strong>@Model.UserName</strong>
+            <span>@Model.Level</span>
+        </div>
+        <div class="comment-rte-content">
+            @Html.Raw(Model.Content)
+        </div>
+        <div class="comment-actions">
+            <button type="button">♡ Thích</button>
+            <button type="button" data-reply-toggle="#@replyFormId">↩ Trả lời</button>
+            <time>@Model.CreatedAtText</time>
+        </div>
+
+        <form id="@replyFormId" class="novel-comment-form novel-reply-form" asp-controller="Novel" asp-action="Comment" method="post" hidden>
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="NovelId" value="@Model.NovelId" />
+            <input type="hidden" name="ParentCommentId" value="@Model.Id" />
+            <textarea id="@replyEditorId" class="tinymce-comment" name="Content" placeholder="Trả lời @Model.UserName..."></textarea>
+            <div class="novel-comment-submit">
+                <span>Reply sẽ được lưu dưới bình luận này.</span>
+                <button type="submit">Gửi trả lời</button>
+            </div>
+        </form>
+
+        @if (Model.Replies.Count > 0)
+        {
+            <div class="novel-comment-replies">
+                @foreach (var reply in Model.Replies)
+                {
+                    <partial name="_NovelComment" model="reply" />
+                }
+            </div>
+        }
+    </div>
+</article>

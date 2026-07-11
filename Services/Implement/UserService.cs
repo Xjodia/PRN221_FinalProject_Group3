@@ -100,6 +100,90 @@ public class UserService : IUserService
         return LoginResult.Success(user);
     }
 
+    public async Task<AccountSettingsViewModel?> GetAccountSettingsAsync(
+        int userId,
+        CancellationToken cancellationToken = default)
+    {
+        var user = await _userDao.GetByIdAsync(userId, cancellationToken: cancellationToken);
+        if (user is null)
+        {
+            return null;
+        }
+
+        return new AccountSettingsViewModel
+        {
+            Profile = new ProfileEditViewModel
+            {
+                Id = user.Id,
+                DisplayName = user.DisplayName,
+                Bio = user.Bio,
+                AvatarUrl = user.AvatarUrl,
+                Username = user.Username,
+                Email = user.Email
+            },
+            Password = new ChangePasswordViewModel()
+        };
+    }
+
+    public async Task<RegisterResult> UpdateProfileAsync(
+        ProfileEditViewModel model,
+        int userId,
+        CancellationToken cancellationToken = default)
+    {
+        if (model.Id != userId)
+        {
+            return RegisterResult.Failure(string.Empty, "Bạn không có quyền cập nhật hồ sơ này.");
+        }
+
+        var user = await _userDao.GetByIdAsync(
+            userId,
+            asTracking: true,
+            cancellationToken);
+
+        if (user is null)
+        {
+            return RegisterResult.Failure(string.Empty, "Không tìm thấy tài khoản.");
+        }
+
+        user.DisplayName = model.DisplayName.Trim();
+        user.Bio = string.IsNullOrWhiteSpace(model.Bio) ? null : model.Bio.Trim();
+        user.AvatarUrl = string.IsNullOrWhiteSpace(model.AvatarUrl) ? null : model.AvatarUrl.Trim();
+        user.UpdatedAt = DateTimeOffset.UtcNow;
+
+        await _userDao.SaveChangesAsync(cancellationToken);
+        return RegisterResult.Success();
+    }
+
+    public async Task<RegisterResult> ChangePasswordAsync(
+        ChangePasswordViewModel model,
+        int userId,
+        CancellationToken cancellationToken = default)
+    {
+        var user = await _userDao.GetByIdAsync(
+            userId,
+            asTracking: true,
+            cancellationToken);
+
+        if (user is null)
+        {
+            return RegisterResult.Failure(string.Empty, "Không tìm thấy tài khoản.");
+        }
+
+        if (HasExistingPassword(user.PasswordHash)
+            && !IsPasswordValid(model.CurrentPassword ?? string.Empty, user.PasswordHash))
+        {
+            return RegisterResult.Failure(
+                nameof(model.CurrentPassword),
+                "Mật khẩu hiện tại không chính xác.");
+        }
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+        user.UpdatedAt = DateTimeOffset.UtcNow;
+
+        await _userDao.SaveChangesAsync(cancellationToken);
+        return RegisterResult.Success();
+    }
+
     private bool IsPasswordValid(string password, string passwordHash)
     {
         try
@@ -111,5 +195,14 @@ public class UserService : IUserService
             _logger.LogWarning(exception, "Password hash không hợp lệ.");
             return false;
         }
+    }
+
+    private static bool HasExistingPassword(string? passwordHash)
+    {
+        return !string.IsNullOrWhiteSpace(passwordHash)
+               && !string.Equals(
+                   passwordHash,
+                   "seeded-account-not-for-login",
+                   StringComparison.Ordinal);
     }
 }

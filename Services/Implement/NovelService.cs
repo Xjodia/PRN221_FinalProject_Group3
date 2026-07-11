@@ -1,7 +1,9 @@
+using System.Text.RegularExpressions;
 using PRN221_FinalProject_Group3.DAO;
 using PRN221_FinalProject_Group3.Models;
 using PRN221_FinalProject_Group3.Models.ViewModels;
 using PRN221_FinalProject_Group3.Services.Interface;
+using PRN221_FinalProject_Group3.Services.Results;
 
 namespace PRN221_FinalProject_Group3.Services.Implement;
 
@@ -67,11 +69,13 @@ public class NovelService : INovelService
             .OrderBy(chapter => chapter.ChapterNumber)
             .ToList();
         var firstChapter = orderedChapters.FirstOrDefault();
-        var comments = orderedChapters
-            .SelectMany(chapter => chapter.Comments)
+        var comments = novel.Comments
             .OrderByDescending(comment => comment.CreatedAt)
-            .Take(8)
             .ToList();
+        var commentLookup = novel.Comments
+            .OrderBy(comment => comment.CreatedAt)
+            .GroupBy(comment => comment.ParentCommentId ?? 0)
+            .ToDictionary(group => group.Key, group => group.ToList());
 
         return new NovelDetailViewModel
         {
@@ -128,17 +132,101 @@ public class NovelService : INovelService
                 })
                 .ToList(),
             Comments = comments
-                .Select(comment => new CommentViewModel
-                {
-                    UserName = comment.User.DisplayName,
-                    Initials = BuildInitials(comment.User.DisplayName),
-                    Level = comment.User.Role == UserRole.Author ? "Author" : "Lv.1",
-                    Content = comment.Content,
-                    CreatedAtText = FormatRelativeTime(comment.CreatedAt),
-                    IsPinned = comment.UserId == novel.AuthorId
-                })
+                .Where(comment => comment.ParentCommentId is null)
+                .OrderBy(comment => comment.CreatedAt)
+                .Select(comment => MapComment(comment, commentLookup, novel.AuthorId))
                 .ToList()
         };
+    }
+
+    public async Task<SearchViewModel> SearchAsync(
+        string? query,
+        string? tab = null,
+        string? status = null,
+        string? sort = null,
+        CancellationToken cancellationToken = default)
+    {
+        var keyword = (query ?? string.Empty).Trim();
+        var normalizedTab = NormalizeSearchTab(tab);
+        var normalizedStatus = NormalizeSearchStatus(status);
+        var normalizedSort = NormalizeSearchSort(sort);
+
+        if (keyword.Length < 2)
+        {
+            return new SearchViewModel
+            {
+                Query = keyword,
+                Tab = normalizedTab,
+                Status = normalizedStatus,
+                Sort = normalizedSort
+            };
+        }
+
+        var shouldLoadNovels = normalizedTab is "all" or "novels";
+        var shouldLoadMembers = normalizedTab is "all" or "members";
+
+        var novels = shouldLoadNovels
+            ? await _novelDao.SearchNovelsAsync(
+                keyword,
+                ParseNovelStatus(normalizedStatus),
+                normalizedSort,
+                cancellationToken: cancellationToken)
+            : [];
+
+        var members = shouldLoadMembers
+            ? await _novelDao.SearchMembersAsync(keyword, cancellationToken: cancellationToken)
+            : [];
+
+        return new SearchViewModel
+        {
+            Query = keyword,
+            Tab = normalizedTab,
+            Status = normalizedStatus,
+            Sort = normalizedSort,
+            NovelResults = novels.Select(MapSearchNovel).ToList(),
+            MemberResults = members.Select(MapSearchMember).ToList()
+        };
+    }
+
+    public async Task<CommentResult> AddCommentAsync(
+        NovelCommentInputViewModel model,
+        int userId,
+        CancellationToken cancellationToken = default)
+    {
+        if (!await _novelDao.NovelExistsAsync(model.NovelId, cancellationToken))
+        {
+            return CommentResult.Failure("Truyện không tồn tại.");
+        }
+
+        if (model.ParentCommentId.HasValue
+            && !await _novelDao.CommentBelongsToNovelAsync(
+                model.ParentCommentId.Value,
+                model.NovelId,
+                cancellationToken))
+        {
+            return CommentResult.Failure("Bình luận gốc không hợp lệ.");
+        }
+
+        var sanitizedContent = SanitizeTinyMceHtml(model.Content);
+
+        if (string.IsNullOrWhiteSpace(StripHtml(sanitizedContent)))
+        {
+            return CommentResult.Failure("Vui lòng nhập nội dung bình luận.");
+        }
+
+        var now = DateTimeOffset.UtcNow;
+        var comment = new NovelComment
+        {
+            NovelId = model.NovelId,
+            UserId = userId,
+            ParentCommentId = model.ParentCommentId,
+            Content = sanitizedContent,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        await _novelDao.CreateCommentAsync(comment, cancellationToken);
+        return CommentResult.Success();
     }
 
     private static NovelCardViewModel MapNovelCard(Novel novel)
@@ -176,11 +264,162 @@ public class NovelService : INovelService
         };
     }
 
+    private static CommentViewModel MapComment(
+        NovelComment comment,
+        IReadOnlyDictionary<int, List<NovelComment>> lookup,
+        int ownerUserId)
+    {
+        lookup.TryGetValue(comment.Id, out var replies);
+
+        return new CommentViewModel
+        {
+            Id = comment.Id,
+            NovelId = comment.NovelId,
+            UserName = comment.User.DisplayName,
+            Initials = BuildInitials(comment.User.DisplayName),
+            Level = comment.User.Role == UserRole.Author ? "Author" : "Lv.1",
+            Content = comment.Content,
+            CreatedAtText = FormatRelativeTime(comment.CreatedAt),
+            IsPinned = comment.UserId == ownerUserId,
+            Replies = replies is null
+                ? []
+                : replies.Select(reply => MapComment(reply, lookup, ownerUserId)).ToList()
+        };
+    }
+
+    private static string SanitizeTinyMceHtml(string html)
+    {
+        if (string.IsNullOrWhiteSpace(html))
+        {
+            return string.Empty;
+        }
+
+        var sanitized = html.Trim();
+        sanitized = Regex.Replace(
+            sanitized,
+            @"<\s*(script|style|iframe|object|embed|form)[^>]*>.*?<\s*/\s*\1\s*>",
+            string.Empty,
+            RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        sanitized = Regex.Replace(
+            sanitized,
+            @"\s+on[a-z]+\s*=\s*(['""]).*?\1",
+            string.Empty,
+            RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        sanitized = Regex.Replace(
+            sanitized,
+            @"\s+on[a-z]+\s*=\s*[^\s>]+",
+            string.Empty,
+            RegexOptions.IgnoreCase);
+        sanitized = Regex.Replace(
+            sanitized,
+            @"(href|src)\s*=\s*(['""])\s*javascript:.*?\2",
+            "$1=\"#\"",
+            RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+        return sanitized;
+    }
+
+    private static string StripHtml(string html)
+    {
+        return Regex.Replace(html, "<.*?>", string.Empty, RegexOptions.Singleline)
+            .Replace("&nbsp;", " ")
+            .Trim();
+    }
+
     private static string GetCoverImage(string? coverImage)
     {
         return string.IsNullOrWhiteSpace(coverImage)
             ? DefaultCoverImage
             : coverImage;
+    }
+
+    private static SearchNovelResultViewModel MapSearchNovel(Novel novel)
+    {
+        return new SearchNovelResultViewModel
+        {
+            Id = novel.Id,
+            Title = novel.Title,
+            Author = novel.Author.DisplayName,
+            Synopsis = BuildSearchSynopsis(novel.Synopsis),
+            CoverImage = GetCoverImage(novel.CoverImage),
+            Status = FormatStatus(novel.Status),
+            Category = novel.NovelCategories
+                .Select(item => item.Category.Name)
+                .OrderBy(name => name)
+                .FirstOrDefault() ?? "Truyện chữ",
+            ViewCount = novel.ViewCount,
+            ChapterCount = novel.Chapters.Count,
+            UpdatedText = FormatRelativeTime(novel.UpdatedAt)
+        };
+    }
+
+    private static SearchMemberResultViewModel MapSearchMember(User user)
+    {
+        return new SearchMemberResultViewModel
+        {
+            Id = user.Id,
+            DisplayName = user.DisplayName,
+            Username = user.Username,
+            Initials = BuildInitials(user.DisplayName),
+            Role = user.Role == UserRole.Author ? "Tác giả" : "Thành viên",
+            Bio = string.IsNullOrWhiteSpace(user.Bio)
+                ? "Chưa có giới thiệu."
+                : user.Bio,
+            NovelCount = user.AuthoredNovels.Count
+        };
+    }
+
+    private static string BuildSearchSynopsis(string synopsis)
+    {
+        var text = StripHtml(synopsis)
+            .Replace("&nbsp;", " ")
+            .Replace("&amp;", "&");
+
+        return text.Length <= 260
+            ? text
+            : $"{text[..260]}...";
+    }
+
+    private static string NormalizeSearchTab(string? tab)
+    {
+        return tab?.Trim().ToLowerInvariant() switch
+        {
+            "novels" => "novels",
+            "members" => "members",
+            _ => "all"
+        };
+    }
+
+    private static string NormalizeSearchStatus(string? status)
+    {
+        return status?.Trim().ToLowerInvariant() switch
+        {
+            "ongoing" => "ongoing",
+            "completed" => "completed",
+            "paused" => "paused",
+            _ => "all"
+        };
+    }
+
+    private static string NormalizeSearchSort(string? sort)
+    {
+        return sort?.Trim().ToLowerInvariant() switch
+        {
+            "latest" => "latest",
+            "popular" => "popular",
+            _ => "relevance"
+        };
+    }
+
+    private static NovelStatus? ParseNovelStatus(string status)
+    {
+        return status switch
+        {
+            "ongoing" => NovelStatus.Ongoing,
+            "completed" => NovelStatus.Completed,
+            "paused" => NovelStatus.Paused,
+            _ => null
+        };
     }
 
     private static string FormatStatus(NovelStatus status)

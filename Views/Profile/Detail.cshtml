@@ -1,0 +1,98 @@
+@model PRN221_FinalProject_Group3.Models.ViewModels.ProfileViewModel
+
+@{
+    ViewData["Title"] = $"Hồ sơ {Model.DisplayName}";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+}
+
+<section class="profile-page">
+    <div class="profile-shell">
+        <header class="profile-hero">
+            <div class="profile-cover"></div>
+            <div class="profile-info-bar">
+                <div class="profile-avatar">
+                    @if (!string.IsNullOrWhiteSpace(Model.AvatarUrl))
+                    {
+                        <img src="@Model.AvatarUrl" alt="@Model.DisplayName" />
+                    }
+                    else
+                    {
+                        <span>@Model.Initials</span>
+                    }
+                </div>
+                <div>
+                    <h1>@Model.DisplayName</h1>
+                    <p>@@@Model.Username</p>
+                </div>
+                <a class="contact-button" href="mailto:">Liên hệ</a>
+            </div>
+        </header>
+
+        <main class="profile-layout">
+            <aside class="profile-sidebar">
+                <section class="profile-card">
+                    <h2>Giới thiệu</h2>
+                    <p>@Model.Bio</p>
+                    <dl>
+                        <div>
+                            <dt>Ngày tham gia</dt>
+                            <dd>@Model.JoinedText</dd>
+                        </div>
+                    </dl>
+                </section>
+
+                <section class="profile-card profile-stats">
+                    <div>
+                        <strong>@Model.NovelCount</strong>
+                        <span>Truyện đã đăng</span>
+                    </div>
+                    <div>
+                        <strong>@Model.ChapterCount</strong>
+                        <span>Chương đã đăng</span>
+                    </div>
+                    <div>
+                        <strong>@Model.CommentCount</strong>
+                        <span>Bình luận</span>
+                    </div>
+                </section>
+            </aside>
+
+            <section class="profile-content">
+                <div class="section-title">
+                    <span>@Model.NovelCount</span>
+                    <h2>Truyện đã đăng</h2>
+                </div>
+
+                @if (!Model.Novels.Any())
+                {
+                    <div class="profile-empty">Người dùng này chưa đăng truyện nào.</div>
+                }
+                else
+                {
+                    <div class="profile-novel-grid">
+                        @foreach (var novel in Model.Novels)
+                        {
+                            <article class="profile-novel-card">
+                                <a class="profile-novel-cover" asp-controller="Novel" asp-action="Detail" asp-route-id="@novel.Id">
+                                    <img src="@novel.CoverImage" alt="@novel.Title" />
+                                </a>
+                                <div>
+                                    <span class="type-badge">@novel.StoryType</span>
+                                    <h3>
+                                        <a asp-controller="Novel" asp-action="Detail" asp-route-id="@novel.Id">@novel.Title</a>
+                                    </h3>
+                                    <p><strong>Tình trạng:</strong> @novel.Status</p>
+                                    <p><strong>Chương:</strong> @novel.ChapterCount</p>
+                                    <p><strong>Lần cuối:</strong> @novel.UpdatedText</p>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                }
+            </section>
+        </main>
+    </div>
+</section>

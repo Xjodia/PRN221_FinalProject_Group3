@@ -4,9 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - StoryNest</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PRN221_FinalProject_Group3.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body class="site-body">
     <header class="site-header">
@@ -27,11 +31,12 @@
                         <li class="nav-item"><a class="nav-link" href="#featured">Khám phá</a></li>
                         <li class="nav-item"><a class="nav-link" href="#latest">Mới cập nhật</a></li>
                         <li class="nav-item"><a class="nav-link" href="#categories">Thể loại</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Sáng tác</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Dashboard" asp-action="Index">Sáng tác</a></li>
                     </ul>
 
-                    <form class="header-search" role="search">
-                        <input type="search" placeholder="Tìm tên truyện, tác giả..." aria-label="Tìm kiếm truyện" />
+                    <form class="header-search" role="search" asp-controller="Novel" asp-action="Search" method="get">
+                        <input type="search" name="q" value="@Context.Request.Query["q"]"
+                               placeholder="Tìm tên truyện, tác giả..." aria-label="Tìm kiếm truyện" minlength="2" />
                         <button type="submit" aria-label="Tìm kiếm">
                             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
                         </button>
@@ -48,7 +53,16 @@
                             @if (User.Identity?.IsAuthenticated == true)
                             {
                                 <li><span class="dropdown-header">Xin chào, @User.Identity.Name</span></li>
-                                <li><a class="dropdown-item" href="#">Tài khoản</a></li>
+                                <li><a class="dropdown-item" asp-controller="Account" asp-action="Settings">Tài khoản</a></li>
+                                <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="Index">Bảng điều khiển</a></li>
+                                <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="Novels">Tác phẩm của tôi</a></li>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item admin-item" asp-controller="System" asp-action="Index">Hệ thống</a></li>
+                                    <li><a class="dropdown-item admin-item" asp-controller="System" asp-action="Novels">Quản lý truyện</a></li>
+                                    <li><a class="dropdown-item admin-item" href="#">Quản lý tài khoản</a></li>
+                                }
                                 <li><a class="dropdown-item" href="#">Lịch sử đọc</a></li>
                                 <li><a class="dropdown-item" href="#">Truyện theo dõi</a></li>
                                 <li>

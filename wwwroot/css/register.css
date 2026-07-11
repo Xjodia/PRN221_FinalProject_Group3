@@ -31,7 +31,7 @@ body {
         radial-gradient(circle at 82% 78%, rgba(32, 46, 73, .32), transparent 32%),
         var(--page-bg);
     background-size: 60px 60px, 60px 60px, auto, auto, auto;
-    font-family: Inter, "Segoe UI", sans-serif;
+    font-family: "Open Sans", "Segoe UI", Arial, sans-serif;
 }
 
 button,

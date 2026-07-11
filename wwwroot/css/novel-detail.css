@@ -550,6 +550,54 @@
     color: #626a7a;
 }
 
+.novel-comment-form {
+    overflow: hidden;
+    margin-top: 28px;
+    border-radius: 17px;
+}
+
+.novel-comment-form .tox.tox-tinymce {
+    border-color: rgba(255, 255, 255, .09);
+    border-radius: 17px 17px 0 0;
+}
+
+.novel-comment-submit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 52px;
+    padding: 8px 8px 8px 16px;
+    gap: 14px;
+    border-radius: 0 0 8px 8px;
+    color: #d7e0ec;
+    background: #697a72;
+    font-size: .82rem;
+}
+
+.novel-comment-submit button {
+    min-width: 160px;
+    height: 40px;
+    color: white;
+    cursor: pointer;
+    border: 0;
+    border-radius: 5px;
+    background: #38ad9e;
+    font-weight: 850;
+}
+
+.novel-comment-submit button:hover {
+    background: #41c1b0;
+}
+
+.novel-comment-alert {
+    margin-top: 22px;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 88, 88, .34);
+    border-radius: 8px;
+    color: #ffd2d2;
+    background: rgba(255, 88, 88, .1);
+}
+
 .comment-list {
     display: grid;
     margin-top: 32px;
@@ -560,6 +608,10 @@
     display: grid;
     grid-template-columns: 44px 1fr;
     gap: 14px;
+}
+
+.comment-item.owner-comment > .comment-body {
+    border-color: rgba(54, 163, 217, .75);
 }
 
 .comment-avatar,
@@ -581,7 +633,12 @@
 .pin-label {
     display: block;
     margin-bottom: 8px;
-    color: #5eaaff;
+    width: fit-content;
+    padding: 3px 8px;
+    border-radius: 5px;
+    color: #fff4a3;
+    border: 1px solid rgba(255, 210, 56, .45);
+    background: #a3223b;
     font-size: .62rem;
     font-weight: 850;
     letter-spacing: .08em;
@@ -612,6 +669,52 @@
     margin: 8px 0 11px;
     color: #c6cfdd;
     line-height: 1.65;
+}
+
+.comment-body {
+    padding: 14px 16px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .025);
+}
+
+.comment-rte-content {
+    margin-top: 8px;
+    color: #c6cfdd;
+    line-height: 1.65;
+}
+
+.comment-rte-content p {
+    margin: 0 0 10px;
+}
+
+.comment-rte-content p:last-child {
+    margin-bottom: 0;
+}
+
+.comment-rte-content img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+.novel-reply-form {
+    margin-top: 16px;
+}
+
+.novel-comment-replies {
+    display: grid;
+    margin-top: 16px;
+    gap: 14px;
+}
+
+.novel-comment-replies .comment-item {
+    grid-template-columns: 36px minmax(0, 1fr);
+}
+
+.novel-comment-replies .comment-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: .68rem;
 }
 
 .comment-actions {

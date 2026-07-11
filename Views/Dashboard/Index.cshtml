@@ -1,0 +1,64 @@
+@model PRN221_FinalProject_Group3.Models.ViewModels.DashboardHomeViewModel
+
+@{
+    ViewData["Title"] = "Bảng điều khiển";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+}
+
+<section class="dashboard-page">
+    <div class="dashboard-topbar">
+        <a class="dashboard-brand" asp-controller="Dashboard" asp-action="Index">
+            <span>⚙</span> Bảng điều khiển
+        </a>
+        <nav>
+            <a asp-controller="Home" asp-action="Index">⌂ Trang chủ</a>
+            <a class="danger-link" asp-controller="Dashboard" asp-action="CreateNovel">⊕ Đăng truyện</a>
+            <a asp-controller="Dashboard" asp-action="Novels">Tác phẩm</a>
+        </nav>
+        <span class="dashboard-user">@Model.DisplayName</span>
+    </div>
+
+    <div class="dashboard-warning">
+        Không đăng bất cứ truyện, chương truyện, hình ảnh nào có nội dung người lớn 18+
+    </div>
+
+    <main class="dashboard-container">
+        <h1>Bảng điều khiển</h1>
+
+        @if (TempData["SuccessMessage"] is string successMessage)
+        {
+            <div class="dashboard-alert success">@successMessage</div>
+        }
+
+        <div class="dashboard-hero">
+            <div>
+                <h2>Chào mừng quay trở lại, @Model.DisplayName!</h2>
+                <p>Hệ thống đang hoạt động ổn định. Bạn có thể bắt đầu quản lý nội dung bằng thanh điều hướng hoặc các nút bên dưới.</p>
+                <div class="dashboard-actions">
+                    <a class="primary-button" asp-controller="Dashboard" asp-action="CreateNovel">+ Đăng truyện mới</a>
+                    <a class="secondary-button" asp-controller="Dashboard" asp-action="Novels">Quản lý truyện</a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a class="danger-button" asp-controller="System" asp-action="Novels">Quản lý truyện hệ thống</a>
+                        <a class="danger-button" href="#">Quản lý tài khoản</a>
+                    }
+                </div>
+            </div>
+            <div class="hero-mark">⚡</div>
+        </div>
+
+        <div class="dashboard-stats">
+            <div>
+                <span>@Model.NovelCount</span>
+                <p>Truyện đã đăng</p>
+            </div>
+            <div>
+                <span>@Model.ChapterCount</span>
+                <p>Chương đã tạo</p>
+            </div>
+        </div>
+    </main>
+</section>

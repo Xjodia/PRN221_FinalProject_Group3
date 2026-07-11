@@ -1,0 +1,42 @@
+@model PRN221_FinalProject_Group3.Models.ViewModels.NovelFormViewModel
+
+@{
+    ViewData["Title"] = "Sửa truyện";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+}
+
+<section class="dashboard-page">
+    <div class="dashboard-topbar">
+        <a class="dashboard-brand" asp-controller="Dashboard" asp-action="Index">
+            <span>⚙</span> Bảng điều khiển
+        </a>
+        <nav>
+            <a asp-controller="Dashboard" asp-action="Novels">Tác phẩm</a>
+            <a asp-controller="Dashboard" asp-action="Detail" asp-route-id="@Model.Id">Quản lý truyện</a>
+        </nav>
+    </div>
+
+    <div class="dashboard-warning">
+        Không đăng bất cứ truyện, chương truyện, hình ảnh nào có nội dung người lớn 18+
+    </div>
+
+    <main class="dashboard-container narrow">
+        <section class="dashboard-card">
+            <h1>Sửa truyện</h1>
+            <form asp-controller="Dashboard" asp-action="EditNovel" method="post" class="dashboard-form">
+                <input asp-for="Id" type="hidden" />
+                <partial name="_NovelForm" model="Model" />
+                <button class="primary-button" type="submit">Cập nhật truyện</button>
+            </form>
+        </section>
+    </main>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.tiny.cloud/1/cesumgwlg6qzucft6kmxasfetpz7be8c07c9cj23occm8sx6/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="~/js/dashboard-editor.js" asp-append-version="true"></script>
+}

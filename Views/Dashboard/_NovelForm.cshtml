@@ -1,0 +1,88 @@
+@model PRN221_FinalProject_Group3.Models.ViewModels.NovelFormViewModel
+@using PRN221_FinalProject_Group3.Models
+
+<div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+<div class="form-grid">
+    <label asp-for="Title">Tiêu đề *</label>
+    <div>
+        <input asp-for="Title" />
+        <span asp-validation-for="Title"></span>
+    </div>
+
+    <label asp-for="OtherNames">Tên khác</label>
+    <div>
+        <input asp-for="OtherNames" placeholder="Ngăn cách nhiều tên bằng dấu chấm phẩy ;" />
+        <span asp-validation-for="OtherNames"></span>
+    </div>
+
+    <label asp-for="OriginalAuthor">Tác giả</label>
+    <div>
+        <input asp-for="OriginalAuthor" />
+        <span asp-validation-for="OriginalAuthor"></span>
+    </div>
+
+    <label asp-for="Illustrator">Họa sĩ</label>
+    <div>
+        <input asp-for="Illustrator" />
+        <span asp-validation-for="Illustrator"></span>
+    </div>
+
+    <label asp-for="StoryType">Loại truyện *</label>
+    <div>
+        <select asp-for="StoryType">
+            <option value="Truyện dịch">Truyện dịch</option>
+            <option value="Truyện sáng tác">Truyện sáng tác</option>
+            <option value="AI dịch">AI dịch</option>
+        </select>
+        <span asp-validation-for="StoryType"></span>
+    </div>
+
+    <label asp-for="TranslationGroup">Nhóm dịch</label>
+    <div>
+        <input asp-for="TranslationGroup" placeholder="Có thể bỏ trống nếu đăng cá nhân" />
+        <span asp-validation-for="TranslationGroup"></span>
+    </div>
+
+    <label asp-for="CoverImage">Ảnh bìa</label>
+    <div>
+        <input asp-for="CoverImage" placeholder="Dán URL ảnh bìa" />
+        <span asp-validation-for="CoverImage"></span>
+    </div>
+
+    <label asp-for="CategoryIds">Thể loại *</label>
+    <div>
+        <select asp-for="CategoryIds" multiple size="7">
+            @foreach (var category in Model.CategoryOptions)
+            {
+                <option value="@category.Id" selected="@(Model.CategoryIds.Contains(category.Id) ? "selected" : null)">
+                    @category.Name
+                </option>
+            }
+        </select>
+        <small>Giữ Ctrl để chọn nhiều thể loại.</small>
+        <span asp-validation-for="CategoryIds"></span>
+    </div>
+
+    <label asp-for="Synopsis">Tóm tắt *</label>
+    <div>
+        <textarea asp-for="Synopsis" class="js-rte" rows="8"></textarea>
+        <span asp-validation-for="Synopsis"></span>
+    </div>
+
+    <label asp-for="Note">Chú thích thêm</label>
+    <div>
+        <textarea asp-for="Note" class="js-rte" rows="6"></textarea>
+        <span asp-validation-for="Note"></span>
+    </div>
+
+    <label asp-for="Status">Tình trạng dịch *</label>
+    <div>
+        <select asp-for="Status">
+            <option value="@NovelStatus.Ongoing">Đang tiến hành</option>
+            <option value="@NovelStatus.Completed">Đã hoàn thành</option>
+            <option value="@NovelStatus.Paused">Tạm dừng</option>
+        </select>
+        <span asp-validation-for="Status"></span>
+    </div>
+</div>

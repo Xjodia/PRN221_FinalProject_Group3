@@ -1,0 +1,87 @@
+@model PRN221_FinalProject_Group3.Models.ViewModels.SystemNovelListViewModel
+
+@{
+    ViewData["Title"] = Model.ShowDeleted ? "Truyện đã bị xóa" : "Truyện trên hệ thống";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/system.css" asp-append-version="true" />
+}
+
+<section class="system-page">
+    <div class="system-shell wide">
+        <header class="system-header compact">
+            <span class="system-badge">ADMIN</span>
+            <h1>@ViewData["Title"]</h1>
+            <p>Xóa truyện ở đây là xóa mềm: dữ liệu vẫn còn, người xem sẽ nhận 404.</p>
+        </header>
+
+        @if (TempData["SuccessMessage"] is string successMessage)
+        {
+            <div class="system-alert success">@successMessage</div>
+        }
+        @if (TempData["ErrorMessage"] is string errorMessage)
+        {
+            <div class="system-alert danger">@errorMessage</div>
+        }
+
+        <nav class="system-tabs">
+            <a class="@(!Model.ShowDeleted ? "active" : null)" asp-controller="System" asp-action="Novels">Truyện trên hệ thống</a>
+            <a class="@(Model.ShowDeleted ? "active" : null)" asp-controller="System" asp-action="DeletedNovels">Truyện đã bị xóa</a>
+            <a asp-controller="System" asp-action="Index">Dashboard hệ thống</a>
+        </nav>
+
+        <section class="system-card">
+            <form class="system-search" asp-controller="System" asp-action="@(Model.ShowDeleted ? "DeletedNovels" : "Novels")" method="get">
+                <input type="search" name="searchTerm" value="@Model.SearchTerm" placeholder="Tìm kiếm tên truyện..." />
+                <button type="submit">Tìm kiếm</button>
+            </form>
+
+            <div class="system-table">
+                <div class="system-table-head">
+                    <span>Tên truyện</span>
+                    <span>Người đăng</span>
+                    <span>Nhóm dịch</span>
+                    <span>Chương</span>
+                    <span>Cập nhật</span>
+                    <span>Quản lý</span>
+                </div>
+
+                @if (!Model.Novels.Any())
+                {
+                    <div class="system-empty">Không có truyện nào trong danh sách này.</div>
+                }
+                else
+                {
+                    @foreach (var novel in Model.Novels)
+                    {
+                        <div class="system-table-row">
+                            <span class="novel-title">@novel.Title</span>
+                            <span>@novel.AuthorName</span>
+                            <span>@(novel.TranslationGroup ?? "Cá nhân")</span>
+                            <span>@novel.ChapterCount</span>
+                            <span>@novel.UpdatedAtText</span>
+                            <div class="system-row-actions">
+                                @if (Model.ShowDeleted)
+                                {
+                                    <form asp-controller="System" asp-action="RestoreNovel" asp-route-id="@novel.Id" method="post"
+                                          onsubmit="return confirm('Khôi phục truyện này?');">
+                                        <button class="restore-button" type="submit">Khôi phục</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Novel" asp-action="Detail" asp-route-id="@novel.Id">Xem</a>
+                                    <form asp-controller="System" asp-action="DeleteNovel" asp-route-id="@novel.Id" method="post"
+                                          onsubmit="return confirm('Xóa mềm truyện này? Người xem sẽ không truy cập được nữa.');">
+                                        <button class="delete-button" type="submit">Xóa</button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </section>
+    </div>
+</section>

@@ -28,9 +28,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<UserDao>();
 builder.Services.AddScoped<NovelDao>();
 builder.Services.AddScoped<ChapterDao>();
+builder.Services.AddScoped<DashboardDao>();
+builder.Services.AddScoped<ProfileDao>();
+builder.Services.AddScoped<SystemDao>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<INovelService, NovelService>();
 builder.Services.AddScoped<IChapterService, ChapterService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<ISystemService, SystemService>();
 
 var app = builder.Build();
 
@@ -44,6 +50,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseStatusCodePagesWithReExecute("/Home/NotFoundPage");
 
 app.UseRouting();
 
