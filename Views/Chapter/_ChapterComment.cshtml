@@ -11,7 +11,10 @@
     <div class="reader-comment-body">
         <div class="reader-comment-card">
             <div class="reader-comment-head">
-                <strong>@Model.UserName</strong>
+                <a class="reader-comment-user @(Model.IsUserInactive ? "inactive-user-name-inline" : null)"
+                   asp-controller="Profile"
+                   asp-action="Detail"
+                   asp-route-id="@Model.UserId">@Model.UserName</a>
                 <span class="level-tag">@Model.Level</span>
                 @if (Model.IsOwner)
                 {

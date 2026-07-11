@@ -24,8 +24,12 @@
                     }
                 </div>
                 <div>
-                    <h1>@Model.DisplayName</h1>
+                    <h1 class="@(Model.IsInactive ? "inactive-user-name" : null)">@Model.DisplayName</h1>
                     <p>@@@Model.Username</p>
+                    @if (Model.IsInactive)
+                    {
+                        <span class="inactive-user-badge">Tài khoản đã ngưng hoạt động</span>
+                    }
                 </div>
                 <a class="contact-button" href="mailto:">Liên hệ</a>
             </div>

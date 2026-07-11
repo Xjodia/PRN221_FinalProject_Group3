@@ -21,9 +21,7 @@ public class ProfileDao
             .AsNoTracking()
             .Include(user => user.AuthoredNovels)
                 .ThenInclude(novel => novel.Chapters)
-            .FirstOrDefaultAsync(
-                user => user.Id == userId && user.Status == UserStatus.Active,
-                cancellationToken);
+            .FirstOrDefaultAsync(user => user.Id == userId, cancellationToken);
     }
 
     public Task<int> CountAuthoredChaptersAsync(

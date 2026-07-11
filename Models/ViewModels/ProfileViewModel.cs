@@ -12,6 +12,8 @@ public class ProfileViewModel
 
     public string? AvatarUrl { get; init; }
 
+    public bool IsInactive { get; init; }
+
     public string Bio { get; init; } = string.Empty;
 
     public string JoinedText { get; init; } = string.Empty;

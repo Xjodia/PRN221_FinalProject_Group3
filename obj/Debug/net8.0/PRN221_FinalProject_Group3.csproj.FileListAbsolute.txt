@@ -1,4 +1,3 @@
-D:\Learning\PRN222\Study\PRN221_FinalProject_Group3\PRN221_FinalProject_Group3\bin\Debug\net8.0\PRN221_FinalProject_Group3.exe
 D:\Learning\PRN222\Study\PRN221_FinalProject_Group3\PRN221_FinalProject_Group3\bin\Debug\net8.0\PRN221_FinalProject_Group3.dll
 D:\Learning\PRN222\Study\PRN221_FinalProject_Group3\PRN221_FinalProject_Group3\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
 D:\Learning\PRN222\Study\PRN221_FinalProject_Group3\PRN221_FinalProject_Group3\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll

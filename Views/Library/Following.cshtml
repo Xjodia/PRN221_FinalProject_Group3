@@ -1,0 +1,80 @@
+@model PRN221_FinalProject_Group3.Models.ViewModels.FollowedNovelsViewModel
+
+@{
+    ViewData["Title"] = "Truyện theo dõi";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/library.css" asp-append-version="true" />
+}
+
+<section class="library-page">
+    <div class="library-shell">
+        <header class="library-hero">
+            <div>
+                <h1>Tủ sách <span>@Model.Novels.Count</span></h1>
+                <p>Những truyện bạn đang theo dõi để không bỏ lỡ chương mới.</p>
+            </div>
+            <nav class="library-tabs">
+                <a class="active" asp-controller="Library" asp-action="Following">Đang theo dõi</a>
+                <a asp-controller="Library" asp-action="History">Vừa đọc xong</a>
+            </nav>
+
+            <form class="library-search" asp-controller="Library" asp-action="Following" method="get">
+                <input type="search" name="searchTerm" value="@Model.SearchTerm" placeholder="Tìm trong tủ sách..." />
+                <button type="submit">Tìm</button>
+            </form>
+        </header>
+
+        @if (TempData["SuccessMessage"] is string successMessage)
+        {
+            <div class="library-alert success">@successMessage</div>
+        }
+        @if (TempData["ErrorMessage"] is string errorMessage)
+        {
+            <div class="library-alert danger">@errorMessage</div>
+        }
+
+        @if (!Model.Novels.Any())
+        {
+            <div class="library-empty">Bạn chưa theo dõi truyện nào.</div>
+        }
+        else
+        {
+            <div class="follow-grid">
+                @foreach (var novel in Model.Novels)
+                {
+                    <article class="follow-card">
+                        <a class="follow-cover" asp-controller="Novel" asp-action="Detail" asp-route-id="@novel.NovelId">
+                            <img src="@novel.CoverImage" alt="@novel.Title" />
+                            <span>@novel.Status</span>
+                        </a>
+                        <div class="follow-info">
+                            <h2>
+                                <a asp-controller="Novel" asp-action="Detail" asp-route-id="@novel.NovelId">@novel.Title</a>
+                            </h2>
+                            <p>@novel.AuthorName</p>
+                            @if (novel.LatestChapterId.HasValue)
+                            {
+                                <a class="latest-chapter-link" asp-controller="Chapter" asp-action="Detail" asp-route-id="@novel.LatestChapterId.Value">
+                                    @novel.LatestChapterTitle
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="latest-chapter-link disabled">@novel.LatestChapterTitle</span>
+                            }
+                            <small>Theo dõi @novel.FollowedAtText</small>
+                            <form asp-controller="Library" asp-action="RemoveFollow" method="post"
+                                  onsubmit="return confirm('Xóa truyện này khỏi danh sách theo dõi?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="novelId" value="@novel.NovelId" />
+                                <button type="submit">Xóa theo dõi</button>
+                            </form>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </div>
+</section>

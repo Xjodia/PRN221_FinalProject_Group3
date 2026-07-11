@@ -61,10 +61,10 @@
                                     <li><hr class="dropdown-divider" /></li>
                                     <li><a class="dropdown-item admin-item" asp-controller="System" asp-action="Index">Hệ thống</a></li>
                                     <li><a class="dropdown-item admin-item" asp-controller="System" asp-action="Novels">Quản lý truyện</a></li>
-                                    <li><a class="dropdown-item admin-item" href="#">Quản lý tài khoản</a></li>
+                                    <li><a class="dropdown-item admin-item" asp-controller="System" asp-action="Users">Quản lý tài khoản</a></li>
                                 }
-                                <li><a class="dropdown-item" href="#">Lịch sử đọc</a></li>
-                                <li><a class="dropdown-item" href="#">Truyện theo dõi</a></li>
+                                <li><a class="dropdown-item" asp-controller="Library" asp-action="History">Lịch sử đọc</a></li>
+                                <li><a class="dropdown-item" asp-controller="Library" asp-action="Following">Truyện theo dõi</a></li>
                                 <li>
                                     <form asp-controller="Account" asp-action="Logout" method="post">
                                         <button class="dropdown-item" type="submit">Đăng xuất</button>

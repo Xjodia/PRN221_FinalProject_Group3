@@ -1,0 +1,94 @@
+@model PRN221_FinalProject_Group3.Models.ViewModels.SystemUserListViewModel
+
+@{
+    ViewData["Title"] = Model.ShowDeleted ? "Tài khoản đã bị xóa" : "Tài khoản trên hệ thống";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/system.css" asp-append-version="true" />
+}
+
+<section class="system-page">
+    <div class="system-shell wide">
+        <header class="system-header compact">
+            <span class="system-badge">ADMIN</span>
+            <h1>@ViewData["Title"]</h1>
+            <p>Xóa tài khoản là xóa mềm: hồ sơ và truyện vẫn còn, nhưng người dùng không thể đăng nhập.</p>
+        </header>
+
+        @if (TempData["SuccessMessage"] is string successMessage)
+        {
+            <div class="system-alert success">@successMessage</div>
+        }
+        @if (TempData["ErrorMessage"] is string errorMessage)
+        {
+            <div class="system-alert danger">@errorMessage</div>
+        }
+
+        <nav class="system-tabs">
+            <a class="@(!Model.ShowDeleted ? "active" : null)" asp-controller="System" asp-action="Users">Tài khoản trên hệ thống</a>
+            <a class="@(Model.ShowDeleted ? "active" : null)" asp-controller="System" asp-action="DeletedUsers">Tài khoản đã bị xóa</a>
+            <a asp-controller="System" asp-action="Index">Dashboard hệ thống</a>
+        </nav>
+
+        <section class="system-card">
+            <form class="system-search" asp-controller="System" asp-action="@(Model.ShowDeleted ? "DeletedUsers" : "Users")" method="get">
+                <input type="search" name="searchTerm" value="@Model.SearchTerm" placeholder="Tìm kiếm tài khoản..." />
+                <button type="submit">Tìm kiếm</button>
+            </form>
+
+            <div class="system-table users-table">
+                <div class="system-table-head">
+                    <span>Tài khoản</span>
+                    <span>Email</span>
+                    <span>Role</span>
+                    <span>Truyện</span>
+                    <span>Trạng thái</span>
+                    <span>Cập nhật</span>
+                    <span>Quản lý</span>
+                </div>
+
+                @if (!Model.Users.Any())
+                {
+                    <div class="system-empty">Không có tài khoản nào trong danh sách này.</div>
+                }
+                else
+                {
+                    @foreach (var user in Model.Users)
+                    {
+                        <div class="system-table-row">
+                            <span>
+                                <a class="novel-title" asp-controller="System" asp-action="UserDetail" asp-route-id="@user.Id">
+                                    <span class="@(user.IsInactive ? "inactive-user-name-inline" : null)">@user.DisplayName</span>
+                                </a>
+                                <small class="muted-line">@@@user.Username</small>
+                            </span>
+                            <span>@user.Email</span>
+                            <span>@user.Role</span>
+                            <span>@user.NovelCount</span>
+                            <span>@user.Status</span>
+                            <span>@user.UpdatedAtText</span>
+                            <div class="system-row-actions">
+                                <a asp-controller="System" asp-action="UserDetail" asp-route-id="@user.Id">Sửa</a>
+                                @if (Model.ShowDeleted)
+                                {
+                                    <form asp-controller="System" asp-action="RestoreUser" asp-route-id="@user.Id" method="post"
+                                          onsubmit="return confirm('Khôi phục tài khoản này?');">
+                                        <button class="restore-button" type="submit">Khôi phục</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-controller="System" asp-action="DeleteUser" asp-route-id="@user.Id" method="post"
+                                          onsubmit="return confirm('Xóa mềm tài khoản này? Người dùng sẽ không thể đăng nhập.');">
+                                        <button class="delete-button" type="submit">Xóa</button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </section>
+    </div>
+</section>

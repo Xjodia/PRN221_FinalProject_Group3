@@ -8,6 +8,10 @@ public class NovelDetailViewModel
 
     public string AuthorName { get; init; } = string.Empty;
 
+    public int AuthorId { get; init; }
+
+    public bool IsAuthorInactive { get; init; }
+
     public string TypeName { get; init; } = string.Empty;
 
     public string Status { get; init; } = string.Empty;
@@ -23,6 +27,8 @@ public class NovelDetailViewModel
     public string CoverImage { get; init; } = string.Empty;
 
     public int? FirstChapterId { get; init; }
+
+    public bool IsFollowed { get; init; }
 
     public IReadOnlyList<string> Categories { get; init; } = [];
 
@@ -61,9 +67,13 @@ public class NovelChapterItemViewModel
 
 public class AuthorCardViewModel
 {
+    public int Id { get; init; }
+
     public string DisplayName { get; init; } = string.Empty;
 
     public string Initials { get; init; } = string.Empty;
+
+    public bool IsInactive { get; init; }
 
     public string Level { get; init; } = string.Empty;
 
@@ -80,6 +90,8 @@ public class RecommendedNovelViewModel
 
     public string Author { get; init; } = string.Empty;
 
+    public bool IsAuthorInactive { get; init; }
+
     public string CoverTheme { get; init; } = "blue";
 
     public string CoverImage { get; init; } = string.Empty;
@@ -93,7 +105,11 @@ public class CommentViewModel
 
     public int NovelId { get; init; }
 
+    public int UserId { get; init; }
+
     public string UserName { get; init; } = string.Empty;
+
+    public bool IsUserInactive { get; init; }
 
     public string Initials { get; init; } = string.Empty;
 

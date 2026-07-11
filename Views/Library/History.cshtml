@@ -1,0 +1,47 @@
+@model PRN221_FinalProject_Group3.Models.ViewModels.ReadingHistoryViewModel
+
+@{
+    ViewData["Title"] = "Lịch sử đọc";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/library.css" asp-append-version="true" />
+}
+
+<section class="library-page">
+    <div class="library-shell">
+        <header class="library-hero compact">
+            <div>
+                <h1>Lịch sử đọc <span>@Model.Items.Count</span></h1>
+                <p>Danh sách truyện và chương bạn vừa đọc gần đây.</p>
+            </div>
+            <nav class="library-tabs">
+                <a asp-controller="Library" asp-action="Following">Đang theo dõi</a>
+                <a class="active" asp-controller="Library" asp-action="History">Vừa đọc xong</a>
+            </nav>
+        </header>
+
+        @if (!Model.Items.Any())
+        {
+            <div class="library-empty">Bạn chưa đọc chương nào.</div>
+        }
+        else
+        {
+            <section class="history-card">
+                <div class="history-head">
+                    <span>Tên truyện</span>
+                    <span>Tên chương vừa đọc</span>
+                    <span>Lần đọc</span>
+                </div>
+                @foreach (var item in Model.Items)
+                {
+                    <div class="history-row">
+                        <a asp-controller="Novel" asp-action="Detail" asp-route-id="@item.NovelId">@item.NovelTitle</a>
+                        <a asp-controller="Chapter" asp-action="Detail" asp-route-id="@item.ChapterId">@item.ChapterTitle</a>
+                        <time>@item.LastReadAtText</time>
+                    </div>
+                }
+            </section>
+        }
+    </div>
+</section>

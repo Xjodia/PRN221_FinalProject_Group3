@@ -29,6 +29,10 @@
                 <strong>@Model.UserCount</strong>
                 <span>Tài khoản</span>
             </div>
+            <div>
+                <strong>@Model.DeletedUserCount</strong>
+                <span>Tài khoản đã bị xóa</span>
+            </div>
         </div>
 
         <div class="system-actions">
@@ -37,10 +41,10 @@
                 <strong>Quản lý truyện</strong>
                 <small>Truyện đang hoạt động và truyện đã bị xóa mềm.</small>
             </a>
-            <a class="system-action danger disabled" href="#" aria-disabled="true">
+            <a class="system-action danger" asp-controller="System" asp-action="Users">
                 <span>👤</span>
                 <strong>Quản lý tài khoản</strong>
-                <small>Để sau theo yêu cầu hiện tại.</small>
+                <small>Danh sách người dùng, phân quyền, cấp lại mật khẩu và xóa mềm.</small>
             </a>
         </div>
     </div>

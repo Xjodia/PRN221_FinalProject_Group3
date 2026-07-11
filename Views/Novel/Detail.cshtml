@@ -22,7 +22,12 @@
             <h1>@Model.Title</h1>
 
             <div class="novel-meta">
-                <span>✎ @Model.AuthorName</span>
+                <span>
+                    ✎ <a class="user-name-link @(Model.IsAuthorInactive ? "inactive-user-name-inline" : null)"
+                          asp-controller="Profile"
+                          asp-action="Detail"
+                          asp-route-id="@Model.AuthorId">@Model.AuthorName</a>
+                </span>
                 <span>◇ @Model.TypeName</span>
             </div>
 
@@ -45,7 +50,20 @@
                 <button type="button" class="icon-action recommend-action" aria-label="Đề cử">
                     ♙ <span>9</span>
                 </button>
-                <button type="button" class="icon-action" aria-label="Thích">♡</button>
+                <form asp-controller="Novel"
+                      asp-action="ToggleFollow"
+                      method="post"
+                      class="follow-toggle-form"
+                      data-followed="@Model.IsFollowed.ToString().ToLowerInvariant()"
+                      data-authenticated="@((User.Identity?.IsAuthenticated == true).ToString().ToLowerInvariant())">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="novelId" value="@Model.Id" />
+                    <button type="submit"
+                            class="icon-action follow-heart @(Model.IsFollowed ? "is-followed" : null)"
+                            aria-label="Theo dõi truyện">
+                        @(Model.IsFollowed ? "♥" : "♡")
+                    </button>
+                </form>
                 <button type="button" class="icon-action" aria-label="Theo dõi">▱</button>
             </div>
 
@@ -150,11 +168,17 @@
             <div class="author-banner"></div>
             <div class="author-info">
                 <div class="author-avatar">@Model.Author.Initials</div>
-                <h2>@Model.Author.DisplayName <span>@Model.Author.Level</span></h2>
+                <h2>
+                    <a class="user-name-link @(Model.Author.IsInactive ? "inactive-user-name-inline" : null)"
+                       asp-controller="Profile"
+                       asp-action="Detail"
+                       asp-route-id="@Model.Author.Id">@Model.Author.DisplayName</a>
+                    <span>@Model.Author.Level</span>
+                </h2>
                 <p class="joined-text">▣ @Model.Author.JoinedText</p>
                 <p>@Model.Author.Bio</p>
                 <button type="button">♙ Theo dõi</button>
-                <a href="#">Xem hồ sơ</a>
+                <a asp-controller="Profile" asp-action="Detail" asp-route-id="@Model.Author.Id">Xem hồ sơ</a>
             </div>
         </section>
 
@@ -168,7 +192,7 @@
                     </span>
                     <span>
                         <strong>@novel.Title</strong>
-                        <small>@novel.Author</small>
+                        <small class="@(novel.IsAuthorInactive ? "inactive-user-name-inline" : null)">@novel.Author</small>
                         <em>★ @novel.RatingText</em>
                     </span>
                 </a>
@@ -214,6 +238,23 @@
                     if (textarea && !tinymce.get(textarea.id)) {
                         tinymce.init({ ...tinyMceConfig, selector: `#${textarea.id}` });
                     }
+                }
+            });
+        });
+
+        document.querySelectorAll('.follow-toggle-form').forEach(form => {
+            form.addEventListener('submit', event => {
+                if (form.dataset.authenticated !== 'true') {
+                    return;
+                }
+
+                const isFollowed = form.dataset.followed === 'true';
+                const message = isFollowed
+                    ? 'Bạn muốn bỏ theo dõi truyện này?'
+                    : 'Bạn có muốn theo dõi truyện này?';
+
+                if (!confirm(message)) {
+                    event.preventDefault();
                 }
             });
         });

@@ -1,0 +1,165 @@
+@using PRN221_FinalProject_Group3.Models
+@model PRN221_FinalProject_Group3.Models.ViewModels.SystemUserDetailViewModel
+
+@{
+    ViewData["Title"] = $"Quản lý tài khoản {Model.User.DisplayName}";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/system.css" asp-append-version="true" />
+}
+
+<section class="system-page">
+    <div class="system-shell wide">
+        <header class="system-header compact">
+            <span class="system-badge">ADMIN</span>
+            <h1>Quản lý tài khoản</h1>
+            <p>Admin không xem được mật khẩu hiện tại. Nếu cần hỗ trợ người dùng, hãy cấp một mật khẩu mới.</p>
+        </header>
+
+        @if (TempData["SuccessMessage"] is string successMessage)
+        {
+            <div class="system-alert success">@successMessage</div>
+        }
+        @if (TempData["ErrorMessage"] is string errorMessage)
+        {
+            <div class="system-alert danger">@errorMessage</div>
+        }
+
+        <nav class="system-tabs">
+            <a asp-controller="System" asp-action="Users">Tài khoản trên hệ thống</a>
+            <a asp-controller="System" asp-action="DeletedUsers">Tài khoản đã bị xóa</a>
+            <a asp-controller="Profile" asp-action="Detail" asp-route-id="@Model.User.Id">Xem hồ sơ công khai</a>
+        </nav>
+
+        <div class="system-detail-grid">
+            <aside class="system-card account-summary">
+                <div class="account-avatar">
+                    @if (!string.IsNullOrWhiteSpace(Model.User.AvatarUrl))
+                    {
+                        <img src="@Model.User.AvatarUrl" alt="@Model.User.DisplayName" />
+                    }
+                    else
+                    {
+                        <span>@Model.User.DisplayName.FirstOrDefault().ToString().ToUpperInvariant()</span>
+                    }
+                </div>
+                <h2 class="@(Model.User.Status == UserStatus.Inactive ? "inactive-user-name-inline" : null)">@Model.User.DisplayName</h2>
+                <p>@@@Model.User.Username</p>
+                <dl>
+                    <div>
+                        <dt>Email</dt>
+                        <dd>@Model.User.Email</dd>
+                    </div>
+                    <div>
+                        <dt>Ngày tạo</dt>
+                        <dd>@Model.User.CreatedAtText</dd>
+                    </div>
+                    <div>
+                        <dt>Cập nhật</dt>
+                        <dd>@Model.User.UpdatedAtText</dd>
+                    </div>
+                </dl>
+                <div class="account-stat-grid">
+                    <div><strong>@Model.User.NovelCount</strong><span>Truyện</span></div>
+                    <div><strong>@Model.User.ChapterCount</strong><span>Chương</span></div>
+                    <div><strong>@Model.User.CommentCount</strong><span>Bình luận</span></div>
+                </div>
+            </aside>
+
+            <div class="system-detail-main">
+                <section class="system-card">
+                    <h2 class="system-card-title">Thông tin tài khoản</h2>
+                    <form asp-controller="System" asp-action="UpdateUser" method="post" class="system-form">
+                        <input asp-for="User.Id" type="hidden" name="Id" />
+
+                        <div class="form-grid two">
+                            <label>
+                                <span>Tên đăng nhập</span>
+                                <input asp-for="User.Username" name="Username" />
+                                <small>@Html.ValidationMessage("Username")</small>
+                            </label>
+                            <label>
+                                <span>Email</span>
+                                <input asp-for="User.Email" name="Email" />
+                                <small>@Html.ValidationMessage("Email")</small>
+                            </label>
+                        </div>
+
+                        <label>
+                            <span>Tên hiển thị</span>
+                            <input asp-for="User.DisplayName" name="DisplayName" />
+                            <small>@Html.ValidationMessage("DisplayName")</small>
+                        </label>
+
+                        <label>
+                            <span>Avatar URL</span>
+                            <input asp-for="User.AvatarUrl" name="AvatarUrl" placeholder="https://..." />
+                            <small>@Html.ValidationMessage("AvatarUrl")</small>
+                        </label>
+
+                        <label>
+                            <span>Giới thiệu</span>
+                            <textarea asp-for="User.Bio" name="Bio" rows="4"></textarea>
+                            <small>@Html.ValidationMessage("Bio")</small>
+                        </label>
+
+                        <div class="form-grid two">
+                            <label>
+                                <span>Role</span>
+                                <select asp-for="User.Role" name="Role" asp-items="Html.GetEnumSelectList<UserRole>()"></select>
+                            </label>
+                            <label>
+                                <span>Trạng thái</span>
+                                <select asp-for="User.Status" name="Status" asp-items="Html.GetEnumSelectList<UserStatus>()"></select>
+                            </label>
+                        </div>
+
+                        <button class="system-submit" type="submit">Lưu thay đổi</button>
+                    </form>
+                </section>
+
+                <section class="system-card">
+                    <h2 class="system-card-title">Cấp lại mật khẩu</h2>
+                    <p class="system-note">Mật khẩu hiện tại không được hiển thị. Mật khẩu mới sẽ được hash bằng BCrypt trước khi lưu.</p>
+                    <form asp-controller="System" asp-action="ResetUserPassword" method="post" class="system-form">
+                        <input asp-for="Password.UserId" type="hidden" name="UserId" />
+                        <div class="form-grid two">
+                            <label>
+                                <span>Mật khẩu mới</span>
+                                <input asp-for="Password.NewPassword" name="NewPassword" autocomplete="new-password" />
+                                <small>@Html.ValidationMessage("NewPassword")</small>
+                            </label>
+                            <label>
+                                <span>Xác nhận mật khẩu</span>
+                                <input asp-for="Password.ConfirmPassword" name="ConfirmPassword" autocomplete="new-password" />
+                                <small>@Html.ValidationMessage("ConfirmPassword")</small>
+                            </label>
+                        </div>
+                        <button class="system-submit danger" type="submit">Cấp lại mật khẩu</button>
+                    </form>
+                </section>
+
+                <section class="system-card">
+                    <h2 class="system-card-title">Thao tác nhanh</h2>
+                    <div class="system-row-actions">
+                        @if (Model.User.Status == UserStatus.Inactive)
+                        {
+                            <form asp-controller="System" asp-action="RestoreUser" asp-route-id="@Model.User.Id" method="post"
+                                  onsubmit="return confirm('Khôi phục tài khoản này?');">
+                                <button class="restore-button" type="submit">Khôi phục tài khoản</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-controller="System" asp-action="DeleteUser" asp-route-id="@Model.User.Id" method="post"
+                                  onsubmit="return confirm('Xóa mềm tài khoản này? Người dùng sẽ không thể đăng nhập.');">
+                                <button class="delete-button" type="submit">Xóa mềm tài khoản</button>
+                            </form>
+                        }
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</section>

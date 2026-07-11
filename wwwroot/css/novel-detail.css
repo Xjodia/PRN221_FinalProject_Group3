@@ -237,6 +237,20 @@
     background: rgba(255, 255, 255, .1);
 }
 
+.follow-toggle-form {
+    margin: 0;
+}
+
+.follow-heart.is-followed {
+    color: #ff2f8a;
+    background: rgba(255, 47, 138, .16);
+}
+
+.follow-heart.is-followed:hover {
+    color: #ff5ea5;
+    background: rgba(255, 47, 138, .24);
+}
+
 .recommend-action {
     color: #ff2f73;
     background: rgba(255, 47, 115, .1);
@@ -651,8 +665,11 @@
     gap: 8px;
 }
 
-.comment-author-line strong {
+.comment-author-line strong,
+.comment-user-link {
     color: white;
+    text-decoration: none;
+    font-weight: 900;
 }
 
 .comment-author-line span,

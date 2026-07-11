@@ -132,8 +132,8 @@ public class NovelDao
     public Task<List<Novel>> SearchNovelsAsync(
         string keyword,
         NovelStatus? status = null,
-        string sort = "relevance",
-        int take = 20,
+        string sort = "az",
+        int take = 0,
         CancellationToken cancellationToken = default)
     {
         var normalizedKeyword = keyword.Trim().ToLower();
@@ -143,8 +143,11 @@ public class NovelDao
             .Include(novel => novel.Chapters)
             .Include(novel => novel.NovelCategories)
                 .ThenInclude(item => item.Category)
-            .Where(novel => novel.IsActive)
-            .Where(novel =>
+            .Where(novel => novel.IsActive);
+
+        if (!string.IsNullOrWhiteSpace(normalizedKeyword))
+        {
+            query = query.Where(novel =>
                 novel.Title.ToLower().Contains(normalizedKeyword)
                 || (novel.OtherNames != null && novel.OtherNames.ToLower().Contains(normalizedKeyword))
                 || (novel.OriginalAuthor != null && novel.OriginalAuthor.ToLower().Contains(normalizedKeyword))
@@ -152,6 +155,7 @@ public class NovelDao
                 || novel.Author.Username.ToLower().Contains(normalizedKeyword)
                 || novel.NovelCategories.Any(item => item.Category.Name.ToLower().Contains(normalizedKeyword))
                 || novel.Synopsis.ToLower().Contains(normalizedKeyword));
+        }
 
         if (status.HasValue)
         {
@@ -160,16 +164,26 @@ public class NovelDao
 
         query = sort switch
         {
+            "az" => query
+                .OrderBy(novel => EF.Functions.Like(novel.Title, "[0-9]%") ? 0 : 1)
+                .ThenBy(novel => novel.Title),
             "latest" => query.OrderByDescending(novel => novel.UpdatedAt),
             "popular" => query.OrderByDescending(novel => novel.ViewCount)
                 .ThenByDescending(novel => novel.UpdatedAt),
             _ => query
                 .OrderByDescending(novel => novel.Title.ToLower().Contains(normalizedKeyword))
+                .ThenBy(novel => EF.Functions.Like(novel.Title, "[0-9]%") ? 0 : 1)
+                .ThenBy(novel => novel.Title)
                 .ThenByDescending(novel => novel.ViewCount)
                 .ThenByDescending(novel => novel.UpdatedAt)
         };
 
-        return query.Take(take).ToListAsync(cancellationToken);
+        if (take > 0)
+        {
+            query = query.Take(take);
+        }
+
+        return query.ToListAsync(cancellationToken);
     }
 
     public Task<List<User>> SearchMembersAsync(

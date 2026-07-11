@@ -35,7 +35,11 @@ public class ChapterCommentItemViewModel
 
     public int ChapterId { get; init; }
 
+    public int UserId { get; init; }
+
     public string UserName { get; init; } = string.Empty;
+
+    public bool IsUserInactive { get; init; }
 
     public string Initials { get; init; } = string.Empty;
 

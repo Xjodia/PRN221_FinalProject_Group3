@@ -9,6 +9,7 @@ public interface INovelService
 
     Task<NovelDetailViewModel?> GetNovelDetailAsync(
         int id,
+        int? currentUserId = null,
         CancellationToken cancellationToken = default);
 
     Task<SearchViewModel> SearchAsync(

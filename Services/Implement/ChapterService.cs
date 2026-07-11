@@ -121,7 +121,9 @@ public class ChapterService : IChapterService
             {
                 Id = comment.Id,
                 ChapterId = chapterId,
+                UserId = comment.UserId,
                 UserName = comment.User.DisplayName,
+                IsUserInactive = comment.User.Status == UserStatus.Inactive,
                 Initials = BuildInitials(comment.User.DisplayName),
                 Level = comment.User.Role == UserRole.Author ? "TRANS" : "Lv.1",
                 Content = comment.Content,

@@ -241,8 +241,11 @@ body.site-body {
     gap: 8px;
 }
 
-.reader-comment-head strong {
+.reader-comment-head strong,
+.reader-comment-user {
     color: white;
+    text-decoration: none;
+    font-weight: 900;
 }
 
 .level-tag,

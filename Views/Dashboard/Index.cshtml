@@ -43,7 +43,7 @@
                     @if (User.IsInRole("Admin"))
                     {
                         <a class="danger-button" asp-controller="System" asp-action="Novels">Quản lý truyện hệ thống</a>
-                        <a class="danger-button" href="#">Quản lý tài khoản</a>
+                        <a class="danger-button" asp-controller="System" asp-action="Users">Quản lý tài khoản</a>
                     }
                 </div>
             </div>

@@ -8,17 +8,25 @@ namespace PRN221_FinalProject_Group3.Controllers;
 public class NovelController : Controller
 {
     private readonly INovelService _novelService;
+    private readonly ILibraryService _libraryService;
 
-    public NovelController(INovelService novelService)
+    public NovelController(
+        INovelService novelService,
+        ILibraryService libraryService)
     {
         _novelService = novelService;
+        _libraryService = libraryService;
     }
 
     public async Task<IActionResult> Detail(
         int id,
         CancellationToken cancellationToken)
     {
-        var viewModel = await _novelService.GetNovelDetailAsync(id, cancellationToken);
+        var currentUserId = TryGetCurrentUserId(out var userId) ? userId : (int?)null;
+        var viewModel = await _novelService.GetNovelDetailAsync(
+            id,
+            currentUserId,
+            cancellationToken);
 
         if (viewModel is null)
         {
@@ -26,6 +34,34 @@ public class NovelController : Controller
         }
 
         return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ToggleFollow(
+        int novelId,
+        CancellationToken cancellationToken)
+    {
+        if (!TryGetCurrentUserId(out var userId))
+        {
+            return RedirectToAction(
+                "Login",
+                "Account",
+                new { returnUrl = Url.Action(nameof(Detail), "Novel", new { id = novelId }) });
+        }
+
+        var result = await _libraryService.ToggleFollowAsync(
+            userId,
+            novelId,
+            cancellationToken);
+
+        if (!result.Succeeded)
+        {
+            TempData["CommentError"] = result.Errors.Values.FirstOrDefault()
+                                       ?? "Không thể cập nhật theo dõi.";
+        }
+
+        return RedirectToAction(nameof(Detail), new { id = novelId });
     }
 
     public async Task<IActionResult> Search(

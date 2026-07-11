@@ -12,10 +12,14 @@ public class NovelService : INovelService
     private const string DefaultCoverImage = "https://i.imgur.com/FTAaZvy.jpeg";
 
     private readonly NovelDao _novelDao;
+    private readonly LibraryDao _libraryDao;
 
-    public NovelService(NovelDao novelDao)
+    public NovelService(
+        NovelDao novelDao,
+        LibraryDao libraryDao)
     {
         _novelDao = novelDao;
+        _libraryDao = libraryDao;
     }
 
     public async Task<HomeViewModel> GetHomePageAsync(
@@ -52,6 +56,7 @@ public class NovelService : INovelService
 
     public async Task<NovelDetailViewModel?> GetNovelDetailAsync(
         int id,
+        int? currentUserId = null,
         CancellationToken cancellationToken = default)
     {
         var novel = await _novelDao.GetDetailAsync(id, cancellationToken);
@@ -76,18 +81,26 @@ public class NovelService : INovelService
             .OrderBy(comment => comment.CreatedAt)
             .GroupBy(comment => comment.ParentCommentId ?? 0)
             .ToDictionary(group => group.Key, group => group.ToList());
+        var isFollowed = currentUserId.HasValue
+                          && await _libraryDao.IsFollowingAsync(
+                              currentUserId.Value,
+                              novel.Id,
+                              cancellationToken);
 
         return new NovelDetailViewModel
         {
             Id = novel.Id,
             Title = novel.Title,
             AuthorName = novel.Author.DisplayName,
+            AuthorId = novel.AuthorId,
+            IsAuthorInactive = novel.Author.Status == UserStatus.Inactive,
             TypeName = "Truyện Sáng Tác",
             Status = FormatStatus(novel.Status),
             UpdatedAtText = FormatDate(novel.UpdatedAt),
             Synopsis = novel.Synopsis,
             CoverImage = GetCoverImage(novel.CoverImage),
             FirstChapterId = firstChapter?.Id,
+            IsFollowed = isFollowed,
             Categories = novel.NovelCategories
                 .Select(item => item.Category.Name)
                 .OrderBy(name => name)
@@ -113,7 +126,9 @@ public class NovelService : INovelService
                 .ToList(),
             Author = new AuthorCardViewModel
             {
+                Id = novel.Author.Id,
                 DisplayName = novel.Author.DisplayName,
+                IsInactive = novel.Author.Status == UserStatus.Inactive,
                 Initials = BuildInitials(novel.Author.DisplayName),
                 Level = novel.Author.Role == UserRole.Author ? "Author" : "Lv.1",
                 JoinedText = $"Thành viên từ {novel.Author.CreatedAt:yyyy}",
@@ -127,6 +142,7 @@ public class NovelService : INovelService
                     Id = item.Id,
                     Title = item.Title,
                     Author = item.Author.DisplayName,
+                    IsAuthorInactive = item.Author.Status == UserStatus.Inactive,
                     CoverImage = GetCoverImage(item.CoverImage),
                     RatingText = "Chưa có"
                 })
@@ -151,7 +167,7 @@ public class NovelService : INovelService
         var normalizedStatus = NormalizeSearchStatus(status);
         var normalizedSort = NormalizeSearchSort(sort);
 
-        if (keyword.Length < 2)
+        if (keyword.Length is > 0 and < 2)
         {
             return new SearchViewModel
             {
@@ -163,7 +179,8 @@ public class NovelService : INovelService
         }
 
         var shouldLoadNovels = normalizedTab is "all" or "novels";
-        var shouldLoadMembers = normalizedTab is "all" or "members";
+        var shouldLoadMembers = keyword.Length >= 2
+                                && (normalizedTab is "all" or "members");
 
         var novels = shouldLoadNovels
             ? await _novelDao.SearchNovelsAsync(
@@ -275,7 +292,9 @@ public class NovelService : INovelService
         {
             Id = comment.Id,
             NovelId = comment.NovelId,
+            UserId = comment.UserId,
             UserName = comment.User.DisplayName,
+            IsUserInactive = comment.User.Status == UserStatus.Inactive,
             Initials = BuildInitials(comment.User.DisplayName),
             Level = comment.User.Role == UserRole.Author ? "Author" : "Lv.1",
             Content = comment.Content,
@@ -340,6 +359,8 @@ public class NovelService : INovelService
             Id = novel.Id,
             Title = novel.Title,
             Author = novel.Author.DisplayName,
+            AuthorId = novel.AuthorId,
+            IsAuthorInactive = novel.Author.Status == UserStatus.Inactive,
             Synopsis = BuildSearchSynopsis(novel.Synopsis),
             CoverImage = GetCoverImage(novel.CoverImage),
             Status = FormatStatus(novel.Status),
@@ -359,6 +380,7 @@ public class NovelService : INovelService
         {
             Id = user.Id,
             DisplayName = user.DisplayName,
+            IsInactive = user.Status == UserStatus.Inactive,
             Username = user.Username,
             Initials = BuildInitials(user.DisplayName),
             Role = user.Role == UserRole.Author ? "Tác giả" : "Thành viên",
@@ -405,9 +427,11 @@ public class NovelService : INovelService
     {
         return sort?.Trim().ToLowerInvariant() switch
         {
+            "az" => "az",
             "latest" => "latest",
             "popular" => "popular",
-            _ => "relevance"
+            "relevance" => "relevance",
+            _ => "az"
         };
     }
 

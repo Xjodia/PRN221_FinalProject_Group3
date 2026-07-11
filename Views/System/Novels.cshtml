@@ -57,7 +57,7 @@
                     {
                         <div class="system-table-row">
                             <span class="novel-title">@novel.Title</span>
-                            <span>@novel.AuthorName</span>
+                            <span class="@(novel.IsAuthorInactive ? "inactive-user-name-inline" : null)">@novel.AuthorName</span>
                             <span>@(novel.TranslationGroup ?? "Cá nhân")</span>
                             <span>@novel.ChapterCount</span>
                             <span>@novel.UpdatedAtText</span>

@@ -25,6 +25,10 @@ public class SearchNovelResultViewModel
 
     public string Author { get; init; } = string.Empty;
 
+    public int AuthorId { get; init; }
+
+    public bool IsAuthorInactive { get; init; }
+
     public string Synopsis { get; init; } = string.Empty;
 
     public string CoverImage { get; init; } = string.Empty;
@@ -45,6 +49,8 @@ public class SearchMemberResultViewModel
     public int Id { get; init; }
 
     public string DisplayName { get; init; } = string.Empty;
+
+    public bool IsInactive { get; init; }
 
     public string Username { get; init; } = string.Empty;
 

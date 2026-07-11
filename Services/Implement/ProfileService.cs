@@ -54,6 +54,7 @@ public class ProfileService : IProfileService
             Username = user.Username,
             Initials = BuildInitials(user.DisplayName),
             AvatarUrl = user.AvatarUrl,
+            IsInactive = user.Status == UserStatus.Inactive,
             Bio = string.IsNullOrWhiteSpace(user.Bio)
                 ? "Người dùng này chưa cập nhật giới thiệu."
                 : user.Bio,

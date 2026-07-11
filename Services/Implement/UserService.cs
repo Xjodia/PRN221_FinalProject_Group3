@@ -91,7 +91,9 @@ public class UserService : IUserService
         if (user.Status != UserStatus.Active)
         {
             return LoginResult.Failure(
-                "Tài khoản hiện không thể đăng nhập.");
+                user.Status == UserStatus.Inactive
+                    ? "Tài khoản của bạn đã bị hệ thống ngưng hoạt động"
+                    : "Tài khoản hiện không thể đăng nhập.");
         }
 
         user.LastLoginAt = DateTimeOffset.UtcNow;

@@ -8,10 +8,14 @@ namespace PRN221_FinalProject_Group3.Controllers;
 public class ChapterController : Controller
 {
     private readonly IChapterService _chapterService;
+    private readonly ILibraryService _libraryService;
 
-    public ChapterController(IChapterService chapterService)
+    public ChapterController(
+        IChapterService chapterService,
+        ILibraryService libraryService)
     {
         _chapterService = chapterService;
+        _libraryService = libraryService;
     }
 
     [HttpGet]
@@ -24,6 +28,14 @@ public class ChapterController : Controller
         if (viewModel is null)
         {
             return NotFound();
+        }
+
+        if (TryGetCurrentUserId(out var userId))
+        {
+            await _libraryService.SaveReadingHistoryAsync(
+                userId,
+                id,
+                cancellationToken);
         }
 
         return View(viewModel);
