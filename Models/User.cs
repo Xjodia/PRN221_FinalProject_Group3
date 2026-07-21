@@ -54,6 +54,8 @@ public class User
     public ICollection<ChapterComment> ChapterComments { get; set; } = new List<ChapterComment>();
 
     public ICollection<NovelComment> NovelComments { get; set; } = new List<NovelComment>();
+
+    public ICollection<EmailVerification> EmailVerifications { get; set; } = new List<EmailVerification>();
 }
 
 public enum UserRole

@@ -387,6 +387,13 @@ a:hover {
     font-size: .84rem;
 }
 
+.otp-input {
+    font-size: 1.75rem !important;
+    font-weight: 800;
+    letter-spacing: .42em;
+    text-align: center;
+}
+
 @media (max-width: 860px) {
     .register-page {
         padding: 24px;

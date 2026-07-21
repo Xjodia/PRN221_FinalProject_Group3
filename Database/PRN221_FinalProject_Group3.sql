@@ -1,4 +1,16 @@
-﻿IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+﻿USE [master];
+GO
+
+IF DB_ID(N'PRN221_FinalProject_Group3') IS NULL
+BEGIN
+    CREATE DATABASE [PRN221_FinalProject_Group3];
+END;
+GO
+
+USE [PRN221_FinalProject_Group3];
+GO
+
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
 BEGIN
     CREATE TABLE [__EFMigrationsHistory] (
         [MigrationId] nvarchar(150) NOT NULL,
@@ -381,6 +393,49 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20260720122507_AddEmailVerificationFlows'
+)
+BEGIN
+    CREATE TABLE [EmailVerifications] (
+        [Id] uniqueidentifier NOT NULL,
+        [Email] nvarchar(256) NOT NULL,
+        [Purpose] nvarchar(30) NOT NULL,
+        [CodeHash] nvarchar(100) NOT NULL,
+        [ExpiresAt] datetimeoffset NOT NULL,
+        [FailedAttempts] int NOT NULL,
+        [VerifiedAt] datetimeoffset NULL,
+        [ResetTokenHash] nvarchar(64) NULL,
+        [ResetTokenExpiresAt] datetimeoffset NULL,
+        [UserId] int NULL,
+        [Username] nvarchar(50) NULL,
+        [DisplayName] nvarchar(100) NULL,
+        [PasswordHash] nvarchar(255) NULL,
+        [CreatedAt] datetimeoffset NOT NULL,
+        CONSTRAINT [PK_EmailVerifications] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_EmailVerifications_Users_UserId]
+            FOREIGN KEY ([UserId]) REFERENCES [Users] ([Id]) ON DELETE CASCADE
+    );
+
+    CREATE INDEX [IX_EmailVerifications_Email_Purpose]
+        ON [EmailVerifications] ([Email], [Purpose]);
+    CREATE INDEX [IX_EmailVerifications_ExpiresAt]
+        ON [EmailVerifications] ([ExpiresAt]);
+    CREATE INDEX [IX_EmailVerifications_UserId]
+        ON [EmailVerifications] ([UserId]);
+
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20260720122507_AddEmailVerificationFlows', N'8.0.0');
+END;
+GO
+
+COMMIT;
+GO
+
 /* =========================================================
    Seed data for StoryNest home/detail pages
    Safe to run multiple times.
@@ -714,4 +769,5 @@ WHERE [Title] IN
     N'Sau khi trọng sinh tôi chỉ muốn đọc sách'
 );
 GO
+
 

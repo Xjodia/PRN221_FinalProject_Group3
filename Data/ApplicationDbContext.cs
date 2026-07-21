@@ -19,6 +19,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Follow> Follows => Set<Follow>();
     public DbSet<ChapterComment> ChapterComments => Set<ChapterComment>();
     public DbSet<NovelComment> NovelComments => Set<NovelComment>();
+    public DbSet<EmailVerification> EmailVerifications => Set<EmailVerification>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,6 +32,20 @@ public class ApplicationDbContext : DbContext
 
             entity.Property(user => user.Role).HasConversion<string>();
             entity.Property(user => user.Status).HasConversion<string>();
+        });
+
+        modelBuilder.Entity<EmailVerification>(entity =>
+        {
+            entity.HasIndex(item => item.ExpiresAt);
+            entity.HasIndex(item => new { item.Email, item.Purpose });
+            entity.Property(item => item.Purpose)
+                .HasConversion<string>()
+                .HasMaxLength(30);
+
+            entity.HasOne(item => item.User)
+                .WithMany(user => user.EmailVerifications)
+                .HasForeignKey(item => item.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Novel>(entity =>

@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("StoryNest-PRN221-FinalProject-Group3")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("PRN221_FinalProject_Group3")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b690d383b6ff0ae49723faf4b3e3d0803152be24")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+66d523e6143e0c12ac2c31ff9c1ead530d656fa7")]
 [assembly: System.Reflection.AssemblyProductAttribute("PRN221_FinalProject_Group3")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PRN221_FinalProject_Group3")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

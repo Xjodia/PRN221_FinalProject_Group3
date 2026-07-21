@@ -56,6 +56,28 @@ public class UserDao
             cancellationToken);
     }
 
+    public Task<User?> FindByEmailAsync(
+        string email,
+        bool asTracking = false,
+        CancellationToken cancellationToken = default)
+    {
+        var normalizedEmail = email.Trim().ToLower();
+        var query = _context.Users
+            .Where(user => user.Email.ToLower() == normalizedEmail);
+
+        if (!asTracking)
+        {
+            query = query.AsNoTracking();
+        }
+
+        return query.FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public void Add(User user)
+    {
+        _context.Users.Add(user);
+    }
+
     public Task<User?> GetByIdAsync(
         int userId,
         bool asTracking = false,

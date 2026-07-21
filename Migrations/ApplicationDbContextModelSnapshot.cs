@@ -119,6 +119,72 @@ namespace PRN221_FinalProject_Group3.Migrations
                     b.ToTable("ChapterComments");
                 });
 
+            modelBuilder.Entity("PRN221_FinalProject_Group3.Models.EmailVerification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CodeHash")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DisplayName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("FailedAttempts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PasswordHash")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Purpose")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTimeOffset?>("ResetTokenExpiresAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ResetTokenHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Username")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTimeOffset?>("VerifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpiresAt");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("Email", "Purpose");
+
+                    b.ToTable("EmailVerifications");
+                });
+
             modelBuilder.Entity("PRN221_FinalProject_Group3.Models.Follow", b =>
                 {
                     b.Property<int>("UserId")
@@ -157,10 +223,35 @@ namespace PRN221_FinalProject_Group3.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Illustrator")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OriginalAuthor")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("OtherNames")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("StoryType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Synopsis")
                         .IsRequired()
@@ -170,6 +261,10 @@ namespace PRN221_FinalProject_Group3.Migrations
                         .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("TranslationGroup")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("datetimeoffset");
@@ -199,6 +294,45 @@ namespace PRN221_FinalProject_Group3.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("NovelCategories");
+                });
+
+            modelBuilder.Entity("PRN221_FinalProject_Group3.Models.NovelComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(3000)
+                        .HasColumnType("nvarchar(3000)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("NovelId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ParentCommentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NovelId");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("NovelComments");
                 });
 
             modelBuilder.Entity("PRN221_FinalProject_Group3.Models.ReadingHistory", b =>
@@ -339,6 +473,16 @@ namespace PRN221_FinalProject_Group3.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("PRN221_FinalProject_Group3.Models.EmailVerification", b =>
+                {
+                    b.HasOne("PRN221_FinalProject_Group3.Models.User", "User")
+                        .WithMany("EmailVerifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("PRN221_FinalProject_Group3.Models.Follow", b =>
                 {
                     b.HasOne("PRN221_FinalProject_Group3.Models.Novel", "Novel")
@@ -386,6 +530,32 @@ namespace PRN221_FinalProject_Group3.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Novel");
+                });
+
+            modelBuilder.Entity("PRN221_FinalProject_Group3.Models.NovelComment", b =>
+                {
+                    b.HasOne("PRN221_FinalProject_Group3.Models.Novel", "Novel")
+                        .WithMany("Comments")
+                        .HasForeignKey("NovelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRN221_FinalProject_Group3.Models.NovelComment", "ParentComment")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("PRN221_FinalProject_Group3.Models.User", "User")
+                        .WithMany("NovelComments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Novel");
+
+                    b.Navigation("ParentComment");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PRN221_FinalProject_Group3.Models.ReadingHistory", b =>
@@ -436,11 +606,18 @@ namespace PRN221_FinalProject_Group3.Migrations
                 {
                     b.Navigation("Chapters");
 
+                    b.Navigation("Comments");
+
                     b.Navigation("Followers");
 
                     b.Navigation("NovelCategories");
 
                     b.Navigation("ReadingHistories");
+                });
+
+            modelBuilder.Entity("PRN221_FinalProject_Group3.Models.NovelComment", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("PRN221_FinalProject_Group3.Models.User", b =>
@@ -449,7 +626,11 @@ namespace PRN221_FinalProject_Group3.Migrations
 
                     b.Navigation("ChapterComments");
 
+                    b.Navigation("EmailVerifications");
+
                     b.Navigation("FollowedNovels");
+
+                    b.Navigation("NovelComments");
 
                     b.Navigation("ReadingHistories");
                 });

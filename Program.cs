@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PRN221_FinalProject_Group3.DAO;
 using PRN221_FinalProject_Group3.Data;
 using PRN221_FinalProject_Group3.Services.Implement;
+using PRN221_FinalProject_Group3.Services.Email;
 using PRN221_FinalProject_Group3.Services.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +27,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<UserDao>();
+builder.Services.AddScoped<EmailVerificationDao>();
 builder.Services.AddScoped<NovelDao>();
 builder.Services.AddScoped<ChapterDao>();
 builder.Services.AddScoped<DashboardDao>();
@@ -33,6 +35,20 @@ builder.Services.AddScoped<ProfileDao>();
 builder.Services.AddScoped<SystemDao>();
 builder.Services.AddScoped<LibraryDao>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+builder.Services.Configure<MailOptions>(options =>
+{
+    builder.Configuration.GetSection("Mail").Bind(options);
+    options.Host = builder.Configuration["MAIL_HOST"] ?? options.Host;
+    if (int.TryParse(builder.Configuration["MAIL_PORT"], out var mailPort))
+    {
+        options.Port = mailPort;
+    }
+    options.Username = builder.Configuration["MAIL_USERNAME"] ?? options.Username;
+    options.Password = builder.Configuration["MAIL_PASSWORD"] ?? options.Password;
+    options.FromAddress = builder.Configuration["MAIL_FROM"] ?? options.FromAddress;
+    options.FromName = builder.Configuration["MAIL_FROM_NAME"] ?? options.FromName;
+});
 builder.Services.AddScoped<INovelService, NovelService>();
 builder.Services.AddScoped<IChapterService, ChapterService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
