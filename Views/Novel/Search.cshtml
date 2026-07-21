@@ -5,18 +5,28 @@
         ? "Tìm kiếm"
         : $"Tìm kiếm \"{Model.Query}\"";
 
-    string BuildUrl(string? tab = null, string? status = null, string? sort = null)
+    string BuildUrl(string? tab = null, bool clearAdvanced = false)
     {
-        return Url.Action(
-            "Search",
-            "Novel",
-            new
-            {
-                q = Model.Query,
-                tab = tab ?? Model.Tab,
-                status = status ?? Model.Status,
-                sort = sort ?? Model.Sort
-            }) ?? "#";
+        var parameters = new List<KeyValuePair<string, string?>>
+        {
+            new("q", Model.Query),
+            new("tab", tab ?? Model.Tab),
+            new("status", clearAdvanced ? "all" : Model.Status),
+            new("sort", clearAdvanced ? "az" : Model.Sort)
+        };
+
+        if (!clearAdvanced && !string.IsNullOrWhiteSpace(Model.Author))
+        {
+            parameters.Add(new("author", Model.Author));
+        }
+
+        if (!clearAdvanced)
+        {
+            parameters.AddRange(Model.SelectedCategoryIds.Select(categoryId =>
+                new KeyValuePair<string, string?>("categoryIds", categoryId.ToString())));
+        }
+
+        return $"{Url.Action("Search", "Novel")}{Microsoft.AspNetCore.Http.QueryString.Create(parameters)}";
     }
 }
 
@@ -27,45 +37,103 @@
 <section class="search-page">
     <div class="search-shell">
         <header class="search-header">
-            @if (string.IsNullOrWhiteSpace(Model.Query))
-            {
-                <h1>Tìm kiếm</h1>
-                <p>Đang hiển thị toàn bộ truyện. Nhập tối thiểu 2 ký tự nếu muốn tìm thành viên.</p>
-            }
-            else
-            {
-                <h1>"@Model.Query"</h1>
-                <p>Tìm thấy @Model.TotalCount kết quả</p>
-            }
+            <h1>Tìm kiếm</h1>
+            <p>
+                @if (string.IsNullOrWhiteSpace(Model.Query) && !Model.HasAdvancedFilters)
+                {
+                    <text>Khám phá toàn bộ truyện hoặc nhập tối thiểu 2 ký tự để tìm kiếm.</text>
+                }
+                else
+                {
+                    <text>Tìm thấy @Model.TotalCount kết quả phù hợp.</text>
+                }
+            </p>
         </header>
+
+        <form class="search-form" asp-controller="Novel" asp-action="Search" method="get">
+            <input type="hidden" name="tab" value="@Model.Tab" />
+
+            <div class="search-bar">
+                <input type="search"
+                       name="q"
+                       value="@Model.Query"
+                       placeholder="Nhập tên truyện, tác giả..."
+                       aria-label="Từ khóa tìm kiếm" />
+                <button type="submit">Tìm kiếm</button>
+            </div>
+
+            <div class="advanced-search-heading">
+                <button id="advancedSearchToggle"
+                        class="advanced-search-toggle"
+                        type="button"
+                        aria-expanded="@Model.HasAdvancedFilters.ToString().ToLowerInvariant()"
+                        aria-controls="advancedSearchPanel">
+                    <span aria-hidden="true">⚲</span> Tìm kiếm nâng cao
+                </button>
+            </div>
+
+            <section id="advancedSearchPanel"
+                     class="advanced-search-panel"
+                     aria-label="Bộ lọc tìm kiếm nâng cao"
+                     hidden="@(!Model.HasAdvancedFilters)">
+                <div class="advanced-fields">
+                    <label class="advanced-field advanced-author">
+                        <span>Tác giả</span>
+                        <input type="text" name="author" value="@Model.Author" placeholder="Có thể bỏ trống..." />
+                    </label>
+
+                    <label class="advanced-field">
+                        <span>Tình trạng</span>
+                        <select name="status">
+                            <option value="all" selected="@(Model.Status == "all")">Tất cả</option>
+                            <option value="ongoing" selected="@(Model.Status == "ongoing")">Đang tiến hành</option>
+                            <option value="completed" selected="@(Model.Status == "completed")">Hoàn thành</option>
+                            <option value="paused" selected="@(Model.Status == "paused")">Tạm dừng</option>
+                        </select>
+                    </label>
+
+                    <label class="advanced-field">
+                        <span>Sắp xếp</span>
+                        <select name="sort">
+                            <option value="az" selected="@(Model.Sort == "az")">Tên A-Z</option>
+                            <option value="relevance" selected="@(Model.Sort == "relevance")">Liên quan</option>
+                            <option value="latest" selected="@(Model.Sort == "latest")">Mới nhất</option>
+                            <option value="popular" selected="@(Model.Sort == "popular")">Xem nhiều</option>
+                        </select>
+                    </label>
+                </div>
+
+                <fieldset class="category-filter">
+                    <legend>Thể loại <small>(có thể chọn nhiều)</small></legend>
+                    <div class="category-options">
+                        @foreach (var category in Model.Categories)
+                        {
+                            <label>
+                                <input type="checkbox"
+                                       name="categoryIds"
+                                       value="@category.Id"
+                                       checked="@Model.SelectedCategoryIds.Contains(category.Id)" />
+                                <span>@category.Name</span>
+                            </label>
+                        }
+                    </div>
+                </fieldset>
+
+                <div class="advanced-actions">
+                    @if (Model.HasAdvancedFilters)
+                    {
+                        <a href="@BuildUrl(clearAdvanced: true)">Xóa bộ lọc nâng cao</a>
+                    }
+                    <button type="submit">Áp dụng bộ lọc</button>
+                </div>
+            </section>
+        </form>
 
         <nav class="search-tabs" aria-label="Loại kết quả">
             <a class="@(Model.Tab == "all" ? "active" : null)" href="@BuildUrl(tab: "all")">☷ Tất cả</a>
             <a class="@(Model.Tab == "novels" ? "active" : null)" href="@BuildUrl(tab: "novels")">▥ Truyện</a>
             <a class="@(Model.Tab == "members" ? "active" : null)" href="@BuildUrl(tab: "members")">♙ Thành viên</a>
         </nav>
-
-        <form class="search-filters" asp-controller="Novel" asp-action="Search" method="get">
-            <input type="hidden" name="q" value="@Model.Query" />
-            <input type="hidden" name="tab" value="@Model.Tab" />
-
-            <div class="filter-group">
-                <span>Trạng thái:</span>
-                <button class="@(Model.Status == "all" ? "active" : null)" type="submit" name="status" value="all">Tất cả</button>
-                <button class="@(Model.Status == "ongoing" ? "active" : null)" type="submit" name="status" value="ongoing">Đang ra</button>
-                <button class="@(Model.Status == "completed" ? "active" : null)" type="submit" name="status" value="completed">Xong</button>
-            </div>
-
-            <label class="sort-control">
-                Sắp xếp:
-                <select name="sort" onchange="this.form.submit()">
-                    <option value="az" selected="@(Model.Sort == "az")">A-Z</option>
-                    <option value="relevance" selected="@(Model.Sort == "relevance")">Liên quan</option>
-                    <option value="latest" selected="@(Model.Sort == "latest")">Mới nhất</option>
-                    <option value="popular" selected="@(Model.Sort == "popular")">Xem nhiều</option>
-                </select>
-            </label>
-        </form>
 
         @if (Model.Query.Length is > 0 and < 2)
         {
@@ -142,3 +210,24 @@
         }
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        (() => {
+            const toggle = document.getElementById('advancedSearchToggle');
+            const panel = document.getElementById('advancedSearchPanel');
+
+            if (!toggle || !panel) return;
+
+            toggle.addEventListener('click', () => {
+                const isOpening = panel.hidden;
+                panel.hidden = !isOpening;
+                toggle.setAttribute('aria-expanded', isOpening.toString());
+
+                if (isOpening) {
+                    panel.querySelector('input, select')?.focus();
+                }
+            });
+        })();
+    </script>
+}

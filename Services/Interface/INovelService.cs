@@ -17,6 +17,8 @@ public interface INovelService
         string? tab = null,
         string? status = null,
         string? sort = null,
+        string? author = null,
+        IReadOnlyCollection<int>? categoryIds = null,
         CancellationToken cancellationToken = default);
 
     Task<CommentResult> AddCommentAsync(

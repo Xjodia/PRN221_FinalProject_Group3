@@ -69,6 +69,8 @@ public class NovelController : Controller
         string? tab,
         string? status,
         string? sort,
+        string? author,
+        int[]? categoryIds,
         CancellationToken cancellationToken)
     {
         var viewModel = await _novelService.SearchAsync(
@@ -76,6 +78,8 @@ public class NovelController : Controller
             tab,
             status,
             sort,
+            author,
+            categoryIds,
             cancellationToken);
 
         return View(viewModel);

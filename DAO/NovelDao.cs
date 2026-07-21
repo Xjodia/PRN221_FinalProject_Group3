@@ -60,11 +60,17 @@ public class NovelDao
         int take = 12,
         CancellationToken cancellationToken = default)
     {
-        return _context.Categories
+        var query = _context.Categories
             .AsNoTracking()
             .OrderBy(category => category.Name)
-            .Take(take)
-            .ToListAsync(cancellationToken);
+            .AsQueryable();
+
+        if (take > 0)
+        {
+            query = query.Take(take);
+        }
+
+        return query.ToListAsync(cancellationToken);
     }
 
     public Task<Novel?> GetDetailAsync(
@@ -133,10 +139,17 @@ public class NovelDao
         string keyword,
         NovelStatus? status = null,
         string sort = "az",
+        string? author = null,
+        IReadOnlyCollection<int>? categoryIds = null,
         int take = 0,
         CancellationToken cancellationToken = default)
     {
         var normalizedKeyword = keyword.Trim().ToLower();
+        var normalizedAuthor = author?.Trim().ToLower() ?? string.Empty;
+        var selectedCategoryIds = (categoryIds ?? [])
+            .Where(categoryId => categoryId > 0)
+            .Distinct()
+            .ToArray();
         var query = _context.Novels
             .AsNoTracking()
             .Include(novel => novel.Author)
@@ -160,6 +173,22 @@ public class NovelDao
         if (status.HasValue)
         {
             query = query.Where(novel => novel.Status == status.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(normalizedAuthor))
+        {
+            query = query.Where(novel =>
+                (novel.OriginalAuthor != null
+                 && novel.OriginalAuthor.ToLower().Contains(normalizedAuthor))
+                || novel.Author.DisplayName.ToLower().Contains(normalizedAuthor)
+                || novel.Author.Username.ToLower().Contains(normalizedAuthor));
+        }
+
+        if (selectedCategoryIds.Length > 0)
+        {
+            query = query.Where(novel =>
+                novel.NovelCategories.Count(item =>
+                    selectedCategoryIds.Contains(item.CategoryId)) == selectedCategoryIds.Length);
         }
 
         query = sort switch

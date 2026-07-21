@@ -121,7 +121,7 @@
             <div class="category-cloud">
                 @foreach (var category in Model.Categories)
                 {
-                    <a href="#">@category</a>
+                    <a href="@(Url.Action("Search", "Novel"))?q=&categoryIds=@category.Id">@category.Name</a>
                 }
             </div>
         </section>

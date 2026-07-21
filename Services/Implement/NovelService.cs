@@ -49,7 +49,11 @@ public class NovelService : INovelService
                 })
                 .ToList(),
             Categories = categories
-                .Select(category => category.Name)
+                .Select(category => new HomeCategoryViewModel
+                {
+                    Id = category.Id,
+                    Name = category.Name
+                })
                 .ToList()
         };
     }
@@ -160,26 +164,59 @@ public class NovelService : INovelService
         string? tab = null,
         string? status = null,
         string? sort = null,
+        string? author = null,
+        IReadOnlyCollection<int>? categoryIds = null,
         CancellationToken cancellationToken = default)
     {
         var keyword = (query ?? string.Empty).Trim();
+        var authorKeyword = (author ?? string.Empty).Trim();
         var normalizedTab = NormalizeSearchTab(tab);
         var normalizedStatus = NormalizeSearchStatus(status);
         var normalizedSort = NormalizeSearchSort(sort);
+        var categories = await _novelDao.GetCategoriesAsync(
+            take: 0,
+            cancellationToken: cancellationToken);
+        var validCategoryIds = categories.Select(category => category.Id).ToHashSet();
+        var normalizedCategoryIds = (categoryIds ?? [])
+            .Where(categoryId => validCategoryIds.Contains(categoryId))
+            .Distinct()
+            .OrderBy(categoryId => categoryId)
+            .ToList();
 
-        if (keyword.Length is > 0 and < 2)
+        SearchViewModel CreateViewModel(
+            IReadOnlyList<SearchNovelResultViewModel>? novelResults = null,
+            IReadOnlyList<SearchMemberResultViewModel>? memberResults = null)
         {
             return new SearchViewModel
             {
                 Query = keyword,
                 Tab = normalizedTab,
                 Status = normalizedStatus,
-                Sort = normalizedSort
+                Sort = normalizedSort,
+                Author = authorKeyword,
+                SelectedCategoryIds = normalizedCategoryIds,
+                Categories = categories
+                    .Select(category => new SearchCategoryViewModel
+                    {
+                        Id = category.Id,
+                        Name = category.Name
+                    })
+                    .ToList(),
+                NovelResults = novelResults ?? [],
+                MemberResults = memberResults ?? []
             };
+        }
+
+        if (keyword.Length is > 0 and < 2)
+        {
+            return CreateViewModel();
         }
 
         var shouldLoadNovels = normalizedTab is "all" or "novels";
         var shouldLoadMembers = keyword.Length >= 2
+                                && string.IsNullOrWhiteSpace(authorKeyword)
+                                && normalizedStatus == "all"
+                                && normalizedCategoryIds.Count == 0
                                 && (normalizedTab is "all" or "members");
 
         var novels = shouldLoadNovels
@@ -187,6 +224,8 @@ public class NovelService : INovelService
                 keyword,
                 ParseNovelStatus(normalizedStatus),
                 normalizedSort,
+                authorKeyword,
+                normalizedCategoryIds,
                 cancellationToken: cancellationToken)
             : [];
 
@@ -194,15 +233,9 @@ public class NovelService : INovelService
             ? await _novelDao.SearchMembersAsync(keyword, cancellationToken: cancellationToken)
             : [];
 
-        return new SearchViewModel
-        {
-            Query = keyword,
-            Tab = normalizedTab,
-            Status = normalizedStatus,
-            Sort = normalizedSort,
-            NovelResults = novels.Select(MapSearchNovel).ToList(),
-            MemberResults = members.Select(MapSearchMember).ToList()
-        };
+        return CreateViewModel(
+            novels.Select(MapSearchNovel).ToList(),
+            members.Select(MapSearchMember).ToList());
     }
 
     public async Task<CommentResult> AddCommentAsync(

@@ -8,13 +8,31 @@ public class SearchViewModel
 
     public string Status { get; init; } = "all";
 
-    public string Sort { get; init; } = "relevance";
+    public string Sort { get; init; } = "az";
+
+    public string Author { get; init; } = string.Empty;
+
+    public IReadOnlyList<int> SelectedCategoryIds { get; init; } = [];
+
+    public IReadOnlyList<SearchCategoryViewModel> Categories { get; init; } = [];
+
+    public bool HasAdvancedFilters => !string.IsNullOrWhiteSpace(Author)
+                                      || Status != "all"
+                                      || Sort != "az"
+                                      || SelectedCategoryIds.Count > 0;
 
     public int TotalCount => NovelResults.Count + MemberResults.Count;
 
     public IReadOnlyList<SearchNovelResultViewModel> NovelResults { get; init; } = [];
 
     public IReadOnlyList<SearchMemberResultViewModel> MemberResults { get; init; } = [];
+}
+
+public class SearchCategoryViewModel
+{
+    public int Id { get; init; }
+
+    public string Name { get; init; } = string.Empty;
 }
 
 public class SearchNovelResultViewModel

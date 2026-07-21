@@ -8,7 +8,14 @@ public class HomeViewModel
 
     public IReadOnlyList<PopularNovelViewModel> PopularNovels { get; init; } = [];
 
-    public IReadOnlyList<string> Categories { get; init; } = [];
+    public IReadOnlyList<HomeCategoryViewModel> Categories { get; init; } = [];
+}
+
+public class HomeCategoryViewModel
+{
+    public int Id { get; init; }
+
+    public string Name { get; init; } = string.Empty;
 }
 
 public class NovelCardViewModel
